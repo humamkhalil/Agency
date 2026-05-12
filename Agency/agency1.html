@@ -1,0 +1,3544 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ednex Consultant — Management System v2.0</title>
+<style>
+/* ================================================================
+   CSS CUSTOM PROPERTIES — THEME ENGINE
+   ================================================================ */
+:root {
+  /* Brand */
+  --brand-red:        #c0392b;
+  --brand-red-dark:   #922b21;
+  --brand-red-light:  #e74c3c;
+  --brand-green:      #1e8449;
+  --brand-green-dark: #196f3d;
+  --brand-green-light:#27ae60;
+  --brand-amber:      #d68910;
+  --brand-blue:       #1a5276;
+
+  /* Light Theme (default) */
+  --bg:               #f4f6f9;
+  --bg-alt:           #eaecf0;
+  --surface:          #ffffff;
+  --surface-2:        #f8f9fa;
+  --surface-3:        #f0f2f5;
+  --sidebar-bg:       #1c1c2e;
+  --sidebar-text:     rgba(255,255,255,0.72);
+  --sidebar-heading:  rgba(255,255,255,0.30);
+  --sidebar-active:   #c0392b;
+  --sidebar-hover:    rgba(192,57,43,0.18);
+  --topbar-bg:        #ffffff;
+  --text-primary:     #1a202c;
+  --text-secondary:   #4a5568;
+  --text-muted:       #a0aec0;
+  --border:           #e2e8f0;
+  --border-focus:     #c0392b;
+  --input-bg:         #f8f9fa;
+  --shadow-sm:        0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:        0 4px 16px rgba(0,0,0,.10);
+  --shadow-lg:        0 10px 40px rgba(0,0,0,.14);
+  --shadow-xl:        0 20px 60px rgba(0,0,0,.18);
+  --radius-sm:        6px;
+  --radius-md:        10px;
+  --radius-lg:        14px;
+  --radius-xl:        20px;
+  --radius-full:      9999px;
+  --transition:       all .22s cubic-bezier(.4,0,.2,1);
+  --font-sans:        'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono:        'Cascadia Code', 'Consolas', monospace;
+  --sidebar-width:    248px;
+  --topbar-h:         62px;
+}
+
+[data-theme="dark"] {
+  --bg:               #0e1117;
+  --bg-alt:           #161b22;
+  --surface:          #1c2130;
+  --surface-2:        #212940;
+  --surface-3:        #252d45;
+  --sidebar-bg:       #10131c;
+  --topbar-bg:        #1c2130;
+  --text-primary:     #e2e8f0;
+  --text-secondary:   #a0aec0;
+  --text-muted:       #4a5568;
+  --border:           #2d3748;
+  --input-bg:         #212940;
+  --shadow-sm:        0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:        0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:        0 10px 40px rgba(0,0,0,.6);
+}
+
+/* ================================================================
+   GLOBAL RESET
+   ================================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-sans);
+  background:var(--bg);
+  color:var(--text-primary);
+  min-height:100vh;
+  line-height:1.55;
+  transition:background .3s,color .3s;
+  overflow-x:hidden;
+}
+a{text-decoration:none;color:inherit;}
+button{cursor:pointer;font-family:inherit;border:none;background:none;}
+img{max-width:100%;display:block;}
+ul,ol{list-style:none;}
+input,select,textarea{font-family:inherit;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--brand-red);border-radius:var(--radius-full);}
+::selection{background:rgba(192,57,43,.25);}
+
+/* ================================================================
+   UTILITY CLASSES
+   ================================================================ */
+.hidden{display:none!important;}
+.flex{display:flex;}
+.flex-col{flex-direction:column;}
+.items-center{align-items:center;}
+.justify-between{justify-content:space-between;}
+.justify-center{justify-content:center;}
+.gap-4{gap:4px;}
+.gap-8{gap:8px;}
+.gap-12{gap:12px;}
+.gap-16{gap:16px;}
+.gap-20{gap:20px;}
+.w-full{width:100%;}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.text-sm{font-size:12px;}
+.text-base{font-size:14px;}
+.text-lg{font-size:16px;}
+.text-xl{font-size:18px;}
+.font-semibold{font-weight:600;}
+.font-bold{font-weight:700;}
+.text-muted{color:var(--text-muted);}
+.text-red{color:var(--brand-red);}
+.text-green{color:var(--brand-green);}
+.mt-4{margin-top:4px;}
+.mt-8{margin-top:8px;}
+.mt-16{margin-top:16px;}
+.mt-20{margin-top:20px;}
+.mb-8{margin-bottom:8px;}
+.mb-16{margin-bottom:16px;}
+.mb-20{margin-bottom:20px;}
+.p-16{padding:16px;}
+.p-20{padding:20px;}
+.p-24{padding:24px;}
+
+/* ================================================================
+   LOGIN SCREEN
+   ================================================================ */
+#loginScreen{
+  position:fixed;inset:0;
+  background:linear-gradient(135deg,#1a0a00 0%,#2d0f0a 30%,#1c2130 70%,#0e1117 100%);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;
+  overflow:hidden;
+}
+.login-orbs{position:absolute;inset:0;pointer-events:none;}
+.orb{
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:.18;
+  animation:orbFloat 8s ease-in-out infinite;
+}
+.orb-1{width:400px;height:400px;background:var(--brand-red);top:-100px;left:-100px;animation-delay:0s;}
+.orb-2{width:300px;height:300px;background:var(--brand-green);bottom:-80px;right:-80px;animation-delay:-3s;}
+.orb-3{width:250px;height:250px;background:#6c3483;top:50%;right:15%;animation-delay:-5s;}
+@keyframes orbFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-30px) scale(1.05);}}
+
+.login-card{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,.06);
+  backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--radius-xl);
+  padding:48px 44px;
+  width:100%;max-width:400px;
+  box-shadow:var(--shadow-xl);
+  animation:slideUp .5s ease;
+}
+.login-logo-wrap{
+  width:72px;height:72px;
+  background:linear-gradient(135deg,var(--brand-red),var(--brand-green));
+  border-radius:var(--radius-lg);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 24px;
+  font-size:26px;font-weight:900;color:#fff;
+  box-shadow:0 8px 24px rgba(192,57,43,.4);
+  overflow:hidden;
+}
+.login-logo-wrap img{width:100%;height:100%;object-fit:cover;}
+.login-company{text-align:center;margin-bottom:32px;}
+.login-company h1{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;}
+.login-company p{font-size:12px;color:rgba(255,255,255,.45);}
+.login-role-tabs{
+  display:flex;gap:4px;
+  background:rgba(0,0,0,.25);
+  border-radius:var(--radius-md);
+  padding:4px;margin-bottom:24px;
+}
+.role-tab{
+  flex:1;padding:8px;text-align:center;
+  font-size:12px;font-weight:600;
+  color:rgba(255,255,255,.5);
+  border-radius:7px;
+  cursor:pointer;transition:var(--transition);
+}
+.role-tab.active{background:var(--brand-red);color:#fff;}
+.login-field{margin-bottom:16px;}
+.login-field label{display:block;font-size:11px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:7px;letter-spacing:.6px;text-transform:uppercase;}
+.login-field input{
+  width:100%;padding:11px 14px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--radius-md);
+  color:#fff;font-size:14px;outline:none;
+  transition:var(--transition);
+}
+.login-field input:focus{border-color:var(--brand-red);background:rgba(255,255,255,.12);}
+.login-field input::placeholder{color:rgba(255,255,255,.3);}
+.login-btn{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,var(--brand-red),var(--brand-red-dark));
+  color:#fff;border-radius:var(--radius-md);
+  font-size:14px;font-weight:700;letter-spacing:.3px;
+  transition:var(--transition);
+  box-shadow:0 4px 16px rgba(192,57,43,.35);
+  margin-top:8px;
+}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(192,57,43,.45);}
+.login-error{
+  background:rgba(231,76,60,.15);
+  border:1px solid rgba(231,76,60,.3);
+  border-radius:var(--radius-md);
+  padding:10px 14px;
+  font-size:12px;color:#e74c3c;
+  margin-bottom:16px;display:none;
+}
+.login-error.show{display:block;animation:shake .35s ease;}
+.login-footer-note{text-align:center;margin-top:24px;font-size:11px;color:rgba(255,255,255,.25);}
+
+/* ================================================================
+   APP SHELL
+   ================================================================ */
+#appShell{display:flex;min-height:100vh;}
+
+/* ================================================================
+   SIDEBAR
+   ================================================================ */
+.sidebar{
+  width:var(--sidebar-width);
+  background:var(--sidebar-bg);
+  position:fixed;top:0;left:0;bottom:0;
+  z-index:200;
+  display:flex;flex-direction:column;
+  transition:width .28s cubic-bezier(.4,0,.2,1),transform .28s cubic-bezier(.4,0,.2,1);
+  box-shadow:4px 0 24px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+.sidebar.collapsed{width:64px;}
+.sidebar-top{
+  height:var(--topbar-h);
+  display:flex;align-items:center;
+  padding:0 16px;gap:12px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;
+}
+.sb-logo-box{
+  width:36px;height:36px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--brand-red),var(--brand-green));
+  border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;color:#fff;
+  overflow:hidden;
+}
+.sb-logo-box img{width:100%;height:100%;object-fit:cover;}
+.sb-brand{min-width:0;transition:opacity .2s,width .2s;}
+.sb-brand-name{font-size:13px;font-weight:700;color:#fff;line-height:1.2;white-space:nowrap;}
+.sb-brand-sub{font-size:10px;color:var(--sidebar-heading);white-space:nowrap;}
+.sidebar.collapsed .sb-brand{opacity:0;width:0;overflow:hidden;}
+
+.sidebar-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 8px;}
+.sidebar-nav::-webkit-scrollbar{width:3px;}
+.nav-group-label{
+  font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;
+  color:var(--sidebar-heading);
+  padding:14px 10px 6px;
+  white-space:nowrap;overflow:hidden;
+  transition:opacity .2s;
+}
+.sidebar.collapsed .nav-group-label{opacity:0;}
+.nav-link{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 10px;border-radius:var(--radius-md);
+  color:var(--sidebar-text);
+  font-size:13px;font-weight:500;
+  cursor:pointer;
+  transition:var(--transition);
+  white-space:nowrap;overflow:hidden;
+  position:relative;margin-bottom:2px;
+}
+.nav-link:hover{background:var(--sidebar-hover);color:#fff;}
+.nav-link.active{background:var(--sidebar-active);color:#fff;box-shadow:0 3px 12px rgba(192,57,43,.35);}
+.nav-link .nl-icon{font-size:17px;flex-shrink:0;width:20px;text-align:center;}
+.nav-link .nl-label{transition:opacity .2s,width .2s;}
+.sidebar.collapsed .nav-link .nl-label{opacity:0;width:0;overflow:hidden;}
+.nav-link .nl-badge{
+  margin-left:auto;flex-shrink:0;
+  background:var(--brand-red);color:#fff;
+  font-size:10px;font-weight:700;
+  padding:2px 6px;border-radius:var(--radius-full);
+  transition:opacity .2s;
+}
+.sidebar.collapsed .nl-badge{opacity:0;}
+
+.sidebar-bottom{
+  padding:12px 8px;
+  border-top:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;
+}
+.sb-collapse-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;padding:9px;
+  background:rgba(255,255,255,.05);
+  border-radius:var(--radius-md);
+  color:rgba(255,255,255,.4);
+  font-size:16px;cursor:pointer;
+  transition:var(--transition);
+}
+.sb-collapse-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
+
+/* ================================================================
+   TOPBAR
+   ================================================================ */
+.topbar{
+  height:var(--topbar-h);
+  background:var(--topbar-bg);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;
+  padding:0 24px;gap:14px;
+  box-shadow:var(--shadow-sm);
+  transition:background .3s;
+}
+.topbar-hamburger{display:none;font-size:20px;color:var(--text-secondary);padding:6px;}
+.topbar-title{
+  font-size:16px;font-weight:700;
+  color:var(--text-primary);flex:1;
+  display:flex;align-items:center;gap:8px;
+}
+.topbar-title .title-icon{font-size:18px;}
+.topbar-actions{display:flex;align-items:center;gap:10px;}
+.tb-action-btn{
+  width:36px;height:36px;border-radius:var(--radius-md);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;color:var(--text-secondary);
+  background:var(--surface-2);border:1px solid var(--border);
+  transition:var(--transition);cursor:pointer;
+}
+.tb-action-btn:hover{background:var(--brand-red);color:#fff;border-color:var(--brand-red);}
+.tb-logo-upload{cursor:pointer;}
+.topbar-user{
+  display:flex;align-items:center;gap:9px;
+  padding:6px 12px 6px 6px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-full);
+  cursor:pointer;transition:var(--transition);
+  position:relative;
+}
+.topbar-user:hover{border-color:var(--brand-red);}
+.tu-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,var(--brand-red),var(--brand-green));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:#fff;flex-shrink:0;
+}
+.tu-info{line-height:1.2;}
+.tu-name{font-size:12px;font-weight:700;color:var(--text-primary);}
+.tu-role{font-size:10px;color:var(--text-muted);}
+.tu-caret{font-size:10px;color:var(--text-muted);}
+.user-dropdown{
+  position:absolute;top:calc(100% + 8px);right:0;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);
+  width:200px;padding:8px;z-index:1000;
+  animation:fadeIn .18s ease;
+}
+.user-dropdown.hidden{display:none;}
+.ud-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:var(--radius-md);
+  font-size:13px;color:var(--text-secondary);
+  cursor:pointer;transition:var(--transition);
+}
+.ud-item:hover{background:var(--surface-2);color:var(--text-primary);}
+.ud-item.danger{color:#e74c3c;}
+.ud-item.danger:hover{background:rgba(231,76,60,.08);}
+.ud-divider{height:1px;background:var(--border);margin:4px 0;}
+
+/* ================================================================
+   PAGE WRAPPER
+   ================================================================ */
+.page-wrapper{
+  margin-left:var(--sidebar-width);
+  flex:1;
+  display:flex;flex-direction:column;
+  min-height:100vh;
+  transition:margin-left .28s cubic-bezier(.4,0,.2,1);
+}
+.page-wrapper.expanded{margin-left:64px;}
+.page-content{flex:1;padding:24px;}
+
+/* ================================================================
+   PAGES
+   ================================================================ */
+.page{display:none;animation:fadeIn .3s ease;}
+.page.active{display:block;}
+
+/* ================================================================
+   CARDS
+   ================================================================ */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);
+  transition:var(--transition);
+}
+.card:hover{box-shadow:var(--shadow-md);}
+.card-header{
+  padding:18px 22px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{
+  font-size:14px;font-weight:700;
+  color:var(--text-primary);
+  display:flex;align-items:center;gap:8px;
+}
+.card-body{padding:20px 22px;}
+
+/* ================================================================
+   STATS GRID
+   ================================================================ */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;margin-bottom:22px;
+}
+.stat-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:20px 22px;
+  transition:var(--transition);
+  position:relative;overflow:hidden;
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.stat-card::after{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:3px;
+}
+.stat-card:nth-child(1)::after{background:var(--brand-red);}
+.stat-card:nth-child(2)::after{background:var(--brand-green);}
+.stat-card:nth-child(3)::after{background:var(--brand-amber);}
+.stat-card:nth-child(4)::after{background:var(--brand-blue);}
+.stat-icon-wrap{
+  width:44px;height:44px;border-radius:var(--radius-md);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:14px;
+}
+.stat-card:nth-child(1) .stat-icon-wrap{background:rgba(192,57,43,.1);}
+.stat-card:nth-child(2) .stat-icon-wrap{background:rgba(30,132,73,.1);}
+.stat-card:nth-child(3) .stat-icon-wrap{background:rgba(214,137,16,.1);}
+.stat-card:nth-child(4) .stat-icon-wrap{background:rgba(26,82,118,.1);}
+.stat-value{font-size:28px;font-weight:800;color:var(--text-primary);line-height:1;}
+.stat-label{font-size:12px;color:var(--text-muted);margin-top:4px;font-weight:500;}
+.stat-delta{
+  font-size:11px;margin-top:10px;
+  display:flex;align-items:center;gap:4px;font-weight:600;
+}
+.stat-delta.up{color:var(--brand-green);}
+.stat-delta.neutral{color:var(--text-muted);}
+
+/* ================================================================
+   WELCOME BANNER
+   ================================================================ */
+.welcome-banner{
+  background:linear-gradient(135deg,var(--brand-red) 0%,#8b0000 50%,var(--brand-green-dark) 100%);
+  border-radius:var(--radius-lg);
+  padding:28px 32px;
+  color:#fff;
+  margin-bottom:22px;
+  position:relative;overflow:hidden;
+}
+.wb-decor{
+  position:absolute;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+}
+.wb-decor-1{width:200px;height:200px;top:-60px;right:-40px;}
+.wb-decor-2{width:130px;height:130px;bottom:-40px;right:120px;}
+.wb-decor-3{width:80px;height:80px;top:20px;right:180px;}
+.wb-content{position:relative;z-index:1;}
+.wb-greeting{font-size:22px;font-weight:800;margin-bottom:5px;}
+.wb-sub{font-size:13px;opacity:.75;margin-bottom:16px;}
+.wb-ceo{display:flex;align-items:center;gap:10px;margin-top:4px;}
+.wb-ceo-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;border:2px solid rgba(255,255,255,.3);
+}
+.wb-ceo-info{line-height:1.3;}
+.wb-ceo-name{font-size:14px;font-weight:700;}
+.wb-ceo-title{font-size:11px;opacity:.65;}
+.wb-links{display:flex;gap:10px;margin-top:18px;}
+.wb-link{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:var(--radius-full);
+  padding:6px 14px;font-size:12px;font-weight:600;
+  color:#fff;cursor:pointer;transition:var(--transition);
+}
+.wb-link:hover{background:rgba(255,255,255,.22);}
+
+/* ================================================================
+   DATA TABLE
+   ================================================================ */
+.tbl-wrapper{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;box-shadow:var(--shadow-sm);
+}
+.tbl-toolbar{
+  padding:14px 18px;
+  display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+}
+.search-bar{
+  display:flex;align-items:center;gap:8px;
+  background:var(--input-bg);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:8px 12px;flex:1;min-width:200px;max-width:300px;
+  transition:var(--transition);
+}
+.search-bar:focus-within{border-color:var(--brand-red);}
+.search-bar input{
+  border:none;background:transparent;outline:none;
+  font-size:13px;color:var(--text-primary);width:100%;
+}
+.search-bar input::placeholder{color:var(--text-muted);}
+.search-bar .si{font-size:14px;color:var(--text-muted);}
+.tbl-count{font-size:12px;color:var(--text-muted);margin-left:auto;}
+table.dt{width:100%;border-collapse:collapse;}
+table.dt thead{background:linear-gradient(135deg,var(--brand-red),var(--brand-red-dark));}
+table.dt thead th{
+  padding:11px 16px;
+  color:rgba(255,255,255,.9);
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.7px;
+  text-align:left;white-space:nowrap;
+}
+table.dt tbody tr{
+  border-bottom:1px solid var(--border);
+  transition:background .15s;
+}
+table.dt tbody tr:hover{background:var(--surface-2);}
+table.dt tbody tr:last-child{border-bottom:none;}
+table.dt td{padding:11px 16px;font-size:13px;color:var(--text-primary);}
+.tbl-empty{
+  text-align:center;padding:56px 24px;color:var(--text-muted);
+}
+.tbl-empty .te-icon{font-size:40px;margin-bottom:12px;}
+.tbl-empty p{font-size:13px;}
+.row-num{color:var(--text-muted);font-size:11px;width:36px;}
+
+/* ================================================================
+   BADGES
+   ================================================================ */
+.badge{
+  display:inline-flex;align-items:center;
+  padding:3px 10px;border-radius:var(--radius-full);
+  font-size:11px;font-weight:700;letter-spacing:.2px;
+}
+.badge-success{background:rgba(30,132,73,.12);color:#1e8449;}
+.badge-danger{background:rgba(192,57,43,.12);color:#c0392b;}
+.badge-warning{background:rgba(214,137,16,.12);color:#d68910;}
+.badge-info{background:rgba(26,82,118,.12);color:#1a5276;}
+.badge-purple{background:rgba(108,52,131,.12);color:#6c3483;}
+.badge-gray{background:var(--surface-2);color:var(--text-muted);}
+.badge-teal{background:rgba(0,128,128,.12);color:teal;}
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:9px 18px;border-radius:var(--radius-md);
+  font-size:13px;font-weight:600;
+  transition:var(--transition);cursor:pointer;border:none;
+  white-space:nowrap;
+}
+.btn-sm{padding:6px 13px;font-size:12px;border-radius:var(--radius-sm);}
+.btn-xs{padding:4px 9px;font-size:11px;border-radius:var(--radius-sm);}
+.btn-primary{background:var(--brand-red);color:#fff;}
+.btn-primary:hover{background:var(--brand-red-dark);transform:translateY(-1px);box-shadow:0 4px 14px rgba(192,57,43,.3);}
+.btn-success{background:var(--brand-green);color:#fff;}
+.btn-success:hover{background:var(--brand-green-dark);transform:translateY(-1px);box-shadow:0 4px 14px rgba(30,132,73,.3);}
+.btn-warning{background:var(--brand-amber);color:#fff;}
+.btn-warning:hover{background:#b7770d;}
+.btn-danger{background:#e74c3c;color:#fff;}
+.btn-danger:hover{background:#c0392b;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text-secondary);}
+.btn-outline:hover{border-color:var(--brand-red);color:var(--brand-red);}
+.btn-ghost{background:var(--surface-2);color:var(--text-secondary);}
+.btn-ghost:hover{background:var(--surface-3);color:var(--text-primary);}
+.btn-icon{width:34px;height:34px;padding:0;border-radius:var(--radius-md);}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* ================================================================
+   FORMS
+   ================================================================ */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-row.col-1{grid-template-columns:1fr;}
+.form-row.col-3{grid-template-columns:1fr 1fr 1fr;}
+.form-field{margin-bottom:0;}
+.form-field.full{grid-column:1/-1;}
+.field-label{
+  display:block;font-size:11px;font-weight:700;
+  color:var(--text-muted);letter-spacing:.5px;
+  text-transform:uppercase;margin-bottom:7px;
+}
+.field-input{
+  width:100%;padding:10px 13px;
+  background:var(--input-bg);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-md);
+  color:var(--text-primary);font-size:13px;
+  outline:none;transition:var(--transition);
+}
+.field-input:focus{border-color:var(--brand-red);box-shadow:0 0 0 3px rgba(192,57,43,.1);}
+.field-input::placeholder{color:var(--text-muted);}
+.field-input.error{border-color:#e74c3c;}
+textarea.field-input{min-height:80px;resize:vertical;}
+select.field-input{cursor:pointer;}
+.field-hint{font-size:11px;color:var(--text-muted);margin-top:5px;}
+.form-section-title{
+  font-size:13px;font-weight:700;color:var(--text-secondary);
+  padding-bottom:10px;margin-bottom:16px;
+  border-bottom:1px solid var(--border);
+  grid-column:1/-1;
+}
+
+/* ================================================================
+   MODAL
+   ================================================================ */
+.modal-backdrop{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(4px);
+  z-index:5000;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  animation:fadeIn .2s ease;
+}
+.modal-backdrop.hidden{display:none;}
+.modal-box{
+  background:var(--surface);
+  border-radius:var(--radius-xl);
+  width:100%;max-width:580px;
+  max-height:90vh;overflow-y:auto;
+  box-shadow:var(--shadow-xl);
+  animation:slideUp .25s ease;
+}
+.modal-box.sm{max-width:420px;}
+.modal-box.lg{max-width:720px;}
+.modal-header{
+  padding:20px 24px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--surface);z-index:1;
+}
+.modal-title{font-size:16px;font-weight:700;color:var(--text-primary);}
+.modal-close{
+  width:32px;height:32px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;color:var(--text-muted);
+  background:var(--surface-2);cursor:pointer;transition:var(--transition);
+}
+.modal-close:hover{background:#e74c3c;color:#fff;}
+.modal-body{padding:22px 24px;}
+.modal-footer{
+  padding:16px 24px;
+  border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;gap:10px;
+  position:sticky;bottom:0;background:var(--surface);
+}
+
+/* ================================================================
+   TOAST
+   ================================================================ */
+.toast-stack{
+  position:fixed;bottom:24px;right:24px;
+  z-index:9999;display:flex;flex-direction:column;gap:8px;
+}
+.toast-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:13px 16px;
+  min-width:260px;max-width:360px;
+  box-shadow:var(--shadow-lg);
+  animation:slideInRight .25s ease;
+  border-left:4px solid var(--brand-green);
+}
+.toast-item.error{border-left-color:var(--brand-red);}
+.toast-item.warning{border-left-color:var(--brand-amber);}
+.toast-item.info{border-left-color:var(--brand-blue);}
+.toast-icon{font-size:18px;}
+.toast-msg{font-size:13px;font-weight:500;color:var(--text-primary);flex:1;}
+.toast-removing{animation:slideOutRight .25s ease forwards;}
+
+/* ================================================================
+   CONFIRM DIALOG
+   ================================================================ */
+.confirm-body{padding:24px;}
+.confirm-body p{font-size:14px;color:var(--text-secondary);line-height:1.6;}
+
+/* ================================================================
+   DEVELOPER CARD POPUP
+   ================================================================ */
+.dev-popup-wrap{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(6px);
+  z-index:8000;display:flex;align-items:center;justify-content:center;
+  animation:fadeIn .2s ease;
+}
+.dev-popup-wrap.hidden{display:none;}
+.dev-card{
+  background:var(--surface);
+  border-radius:var(--radius-xl);
+  width:100%;max-width:360px;
+  box-shadow:var(--shadow-xl);
+  overflow:hidden;
+  animation:slideUp .3s ease;
+}
+.dev-card-banner{
+  height:80px;
+  background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
+  position:relative;
+}
+.dev-card-avatar{
+  width:64px;height:64px;border-radius:50%;
+  border:3px solid var(--surface);
+  background:linear-gradient(135deg,var(--brand-red),var(--brand-green));
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;color:#fff;
+  position:absolute;bottom:-32px;left:24px;
+  box-shadow:var(--shadow-md);
+}
+.dev-card-body{padding:44px 24px 24px;}
+.dev-card-name{font-size:18px;font-weight:800;color:var(--text-primary);}
+.dev-card-title{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.dev-card-loc{font-size:12px;color:var(--text-muted);margin-top:6px;display:flex;align-items:center;gap:4px;}
+.dev-links{display:flex;flex-direction:column;gap:8px;margin-top:18px;}
+.dev-link{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;border-radius:var(--radius-md);
+  background:var(--surface-2);border:1px solid var(--border);
+  transition:var(--transition);cursor:pointer;
+}
+.dev-link:hover{border-color:var(--brand-red);background:rgba(192,57,43,.04);}
+.dev-link-icon{font-size:18px;width:22px;text-align:center;}
+.dev-link-info{line-height:1.25;}
+.dev-link-label{font-size:11px;color:var(--text-muted);font-weight:600;}
+.dev-link-value{font-size:13px;color:var(--text-primary);font-weight:600;}
+.dev-card-close{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;padding:12px;
+  background:var(--brand-red);color:#fff;
+  font-size:13px;font-weight:700;
+  cursor:pointer;transition:var(--transition);
+}
+.dev-card-close:hover{background:var(--brand-red-dark);}
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+.app-footer{
+  background:var(--sidebar-bg);
+  padding:20px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.footer-left{font-size:12px;color:rgba(255,255,255,.35);}
+.footer-center{display:flex;align-items:center;gap:16px;}
+.footer-icon-link{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:rgba(255,255,255,.5);
+  transition:var(--transition);cursor:pointer;
+}
+.footer-icon-link:hover{color:var(--brand-red-light);}
+.footer-dev-btn{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:600;
+  color:rgba(255,255,255,.6);
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--radius-full);
+  padding:5px 12px;cursor:pointer;
+  transition:var(--transition);
+}
+.footer-dev-btn:hover{border-color:var(--brand-red);color:var(--brand-red-light);}
+
+/* ================================================================
+   SPECIFIC PAGE STYLES
+   ================================================================ */
+
+/* --- Dashboard Quick Actions --- */
+.qa-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.qa-btn{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 15px;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius-md);cursor:pointer;
+  transition:var(--transition);font-size:13px;
+  font-weight:600;color:var(--text-secondary);
+}
+.qa-btn:hover{border-color:var(--brand-red);color:var(--brand-red);background:rgba(192,57,43,.04);}
+.qa-icon{font-size:20px;}
+
+/* --- Social Links Section --- */
+.social-link-item{
+  display:flex;align-items:center;gap:14px;
+  padding:13px 16px;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius-md);margin-bottom:10px;
+  transition:var(--transition);
+}
+.social-link-item:hover{border-color:var(--brand-red);}
+.sli-platform{
+  font-size:22px;width:40px;height:40px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface);border-radius:var(--radius-md);
+  border:1px solid var(--border);
+}
+.sli-info{flex:1;}
+.sli-label{font-size:13px;font-weight:700;color:var(--text-primary);}
+.sli-url{font-size:12px;color:var(--text-muted);word-break:break-all;}
+.sli-actions{display:flex;gap:6px;}
+
+/* --- WhatsApp Config --- */
+.wa-config-card{
+  background:linear-gradient(135deg,rgba(37,211,102,.08),rgba(18,140,126,.05));
+  border:1px solid rgba(37,211,102,.2);
+  border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;
+}
+.wa-status{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:14px;
+}
+.wa-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#25d366;
+  box-shadow:0 0 0 3px rgba(37,211,102,.2);
+}
+.wa-number-display{
+  font-family:var(--font-mono);
+  font-size:18px;font-weight:700;
+  color:var(--text-primary);
+}
+
+/* --- Country Management --- */
+.country-chip{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius-full);
+  padding:5px 12px;font-size:12px;font-weight:600;
+  color:var(--text-primary);margin:4px;
+  transition:var(--transition);
+}
+.country-chip:hover{border-color:var(--brand-red);}
+.country-chip .cc-remove{
+  width:16px;height:16px;border-radius:50%;
+  background:rgba(192,57,43,.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;cursor:pointer;
+  color:var(--brand-red);
+}
+
+/* --- University Item --- */
+.uni-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius-md);margin-bottom:8px;
+  transition:var(--transition);
+}
+.uni-item:hover{border-color:var(--brand-green);}
+.uni-rank{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--brand-green);color:#fff;
+  font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+
+/* --- Role Badge --- */
+.role-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:var(--radius-full);
+  font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+}
+.role-super{background:linear-gradient(135deg,#6c3483,#8e44ad);color:#fff;}
+.role-admin{background:rgba(192,57,43,.12);color:var(--brand-red);}
+.role-general{background:var(--surface-2);color:var(--text-muted);border:1px solid var(--border);}
+
+/* --- Settings Sections --- */
+.settings-section{margin-bottom:28px;}
+.settings-section-title{
+  font-size:13px;font-weight:800;color:var(--text-secondary);
+  text-transform:uppercase;letter-spacing:.8px;
+  padding-bottom:10px;margin-bottom:16px;
+  border-bottom:2px solid var(--brand-red);
+  display:flex;align-items:center;gap:8px;
+}
+.settings-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-bottom:1px solid var(--border);
+  gap:16px;flex-wrap:wrap;
+}
+.settings-row:last-child{border-bottom:none;}
+.sr-info h4{font-size:13px;font-weight:700;color:var(--text-primary);}
+.sr-info p{font-size:12px;color:var(--text-muted);margin-top:2px;}
+
+/* Toggle Switch */
+.toggle-wrap{display:flex;align-items:center;gap:10px;}
+.toggle{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{
+  position:absolute;inset:0;
+  background:var(--border);border-radius:var(--radius-full);cursor:pointer;
+  transition:.3s;
+}
+.toggle-slider::before{
+  content:'';position:absolute;
+  width:16px;height:16px;
+  left:3px;bottom:3px;
+  background:#fff;border-radius:50%;
+  transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.toggle input:checked+.toggle-slider{background:var(--brand-green);}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px);}
+
+/* --- Religious Services --- */
+.rel-category{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;margin-bottom:14px;
+}
+.rel-cat-header{
+  padding:14px 18px;
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  cursor:pointer;
+}
+.rel-cat-icon{font-size:22px;}
+.rel-cat-title{font-size:14px;font-weight:700;color:var(--text-primary);flex:1;}
+.rel-cat-count{font-size:11px;color:var(--text-muted);}
+.rel-cat-body{padding:14px 18px;}
+.rel-service-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);margin-bottom:8px;
+  background:var(--surface);
+  transition:var(--transition);
+}
+.rel-service-item:hover{border-color:var(--brand-red);}
+.rsi-icon{font-size:20px;}
+.rsi-info{flex:1;}
+.rsi-name{font-size:13px;font-weight:700;color:var(--text-primary);}
+.rsi-desc{font-size:11px;color:var(--text-muted);}
+
+/* --- Info grid --- */
+.info-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.info-item{
+  padding:12px 16px;
+  background:var(--surface-2);
+  border-radius:var(--radius-md);
+  border:1px solid var(--border);
+}
+.ii-label{font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.ii-value{font-size:14px;font-weight:700;color:var(--text-primary);margin-top:3px;}
+
+/* --- Pending applicants mini list --- */
+.mini-list-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.mini-list-item:last-child{border-bottom:none;}
+.mli-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--brand-red),var(--brand-green));
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;color:#fff;flex-shrink:0;
+}
+.mli-info{flex:1;min-width:0;}
+.mli-name{font-size:13px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mli-sub{font-size:11px;color:var(--text-muted);}
+
+/* --- Upload zone --- */
+.upload-zone{
+  border:2px dashed var(--border);
+  border-radius:var(--radius-lg);padding:40px 24px;
+  text-align:center;cursor:pointer;
+  transition:var(--transition);background:var(--surface);
+}
+.upload-zone:hover,.upload-zone.drag-active{
+  border-color:var(--brand-red);
+  background:rgba(192,57,43,.03);
+}
+.uz-icon{font-size:40px;margin-bottom:12px;}
+.uz-text{font-size:14px;font-weight:600;color:var(--text-secondary);}
+.uz-sub{font-size:12px;color:var(--text-muted);margin-top:4px;}
+
+/* --- Theme picker --- */
+.theme-pill-wrap{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+.theme-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 16px;
+  border:2px solid var(--border);
+  border-radius:var(--radius-full);
+  cursor:pointer;font-size:13px;font-weight:600;
+  transition:var(--transition);color:var(--text-secondary);
+  background:var(--surface);
+}
+.theme-pill.active{border-color:var(--brand-red);color:var(--brand-red);background:rgba(192,57,43,.05);}
+.theme-pill:hover{border-color:var(--brand-red);}
+.tp-dot{width:12px;height:12px;border-radius:50%;}
+
+/* --- Priority selector --- */
+.priority-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;}
+.priority-card{
+  padding:12px;text-align:center;
+  border:2px solid var(--border);border-radius:var(--radius-md);
+  cursor:pointer;transition:var(--transition);
+}
+.priority-card:hover,.priority-card.selected{border-color:var(--brand-green);}
+.priority-card.selected{background:rgba(30,132,73,.06);}
+.pc-num{font-size:20px;font-weight:800;color:var(--brand-green);}
+.pc-label{font-size:11px;color:var(--text-muted);margin-top:2px;}
+
+/* --- Mobile sidebar overlay --- */
+.mob-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:190;display:none;
+}
+.mob-overlay.show{display:block;}
+
+/* ================================================================
+   ANIMATIONS
+   ================================================================ */
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
+@keyframes slideOutRight{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(40px);}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media(max-width:1100px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);width:var(--sidebar-width)!important;}
+  .sidebar.mob-open{transform:translateX(0);}
+  .page-wrapper,.page-wrapper.expanded{margin-left:0;}
+  .topbar-hamburger{display:block;}
+  .info-grid-2{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .wb-links{flex-wrap:wrap;}
+  .qa-grid{grid-template-columns:1fr;}
+  .page-content{padding:14px;}
+  .topbar{padding:0 14px;}
+  .modal-box{border-radius:var(--radius-lg);}
+}
+@media(max-width:400px){
+  .stats-grid{grid-template-columns:1fr;}
+  .btn-group{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     LOGIN SCREEN
+     ================================================================ -->
+<div id="loginScreen">
+  <div class="login-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="login-card">
+    <div class="login-logo-wrap" id="loginLogo">EC</div>
+    <div class="login-company">
+      <h1>Ednex Consultant</h1>
+      <p>Peshawar · Professional Management Portal</p>
+    </div>
+
+    <!-- Role Tabs -->
+    <div class="login-role-tabs">
+      <div class="role-tab active" onclick="selectRole('general',this)">General</div>
+      <div class="role-tab" onclick="selectRole('admin',this)">Admin</div>
+      <div class="role-tab" onclick="selectRole('super',this)">Super Admin</div>
+    </div>
+
+    <div class="login-error" id="loginError">⚠️ Invalid credentials. Please try again.</div>
+
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" id="lUsername" placeholder="Enter username" autocomplete="off">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="lPassword" placeholder="Enter password">
+    </div>
+    <button class="login-btn" onclick="doLogin()">🔐 Sign In</button>
+    <div class="login-footer-note">Secured · Ednex Consultant v2.0</div>
+  </div>
+</div>
+
+<!-- ================================================================
+     APP SHELL
+     ================================================================ -->
+<div id="appShell" class="hidden">
+
+  <!-- Mobile Overlay -->
+  <div class="mob-overlay" id="mobOverlay" onclick="closeMobSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="sb-logo-box" id="sbLogo">EC</div>
+      <div class="sb-brand">
+        <div class="sb-brand-name">Ednex Consultant</div>
+        <div class="sb-brand-sub">Peshawar, Pakistan</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Main</div>
+      <div class="nav-link active" data-page="dashboard" onclick="gotoPage('dashboard',this)">
+        <span class="nl-icon">🏠</span><span class="nl-label">Dashboard</span>
+      </div>
+      <div class="nav-link" data-page="clients" onclick="gotoPage('clients',this)">
+        <span class="nl-icon">👥</span><span class="nl-label">Clients</span>
+        <span class="nl-badge" id="nb-clients">0</span>
+      </div>
+      <div class="nav-link" data-page="applications" onclick="gotoPage('applications',this)">
+        <span class="nl-icon">📄</span><span class="nl-label">Applications</span>
+        <span class="nl-badge" id="nb-apps">0</span>
+      </div>
+      <div class="nav-link" data-page="cases" onclick="gotoPage('cases',this)">
+        <span class="nl-icon">⚖️</span><span class="nl-label">Cases</span>
+      </div>
+      <div class="nav-link" data-page="appointments" onclick="gotoPage('appointments',this)">
+        <span class="nl-icon">📅</span><span class="nl-label">Appointments</span>
+      </div>
+      <div class="nav-link" data-page="messages" onclick="gotoPage('messages',this)">
+        <span class="nl-icon">💬</span><span class="nl-label">WhatsApp</span>
+      </div>
+
+      <div class="nav-group-label">Services</div>
+      <div class="nav-link" data-page="foreignedu" onclick="gotoPage('foreignedu',this)">
+        <span class="nl-icon">🎓</span><span class="nl-label">Foreign Education</span>
+      </div>
+      <div class="nav-link" data-page="religious" onclick="gotoPage('religious',this)">
+        <span class="nl-icon">🕌</span><span class="nl-label">Religious Services</span>
+      </div>
+      <div class="nav-link" data-page="services" onclick="gotoPage('services',this)">
+        <span class="nl-icon">📋</span><span class="nl-label">All Services</span>
+      </div>
+
+      <div class="nav-group-label">Data & Admin</div>
+      <div class="nav-link" data-page="users" onclick="gotoPage('users',this)">
+        <span class="nl-icon">👤</span><span class="nl-label">User Management</span>
+      </div>
+      <div class="nav-link" data-page="social" onclick="gotoPage('social',this)">
+        <span class="nl-icon">🔗</span><span class="nl-label">Social Links</span>
+      </div>
+      <div class="nav-link" data-page="datamanage" onclick="gotoPage('datamanage',this)">
+        <span class="nl-icon">🗃️</span><span class="nl-label">Data Management</span>
+      </div>
+      <div class="nav-link" data-page="recovery" onclick="gotoPage('recovery',this)">
+        <span class="nl-icon">🔄</span><span class="nl-label">Backup & Recovery</span>
+      </div>
+      <div class="nav-link" data-page="settings" onclick="gotoPage('settings',this)">
+        <span class="nl-icon">⚙️</span><span class="nl-label">Settings</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sb-collapse-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+        <span id="sbCollapseIcon">◀</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Page Wrapper -->
+  <div class="page-wrapper" id="pageWrapper">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <!-- Nav Back/Forward Arrows -->
+      <div style="display:flex;align-items:center;gap:4px;margin-right:6px;">
+        <button id="navBackBtn" onclick="goBack()" title="Go Back" disabled
+          style="width:32px;height:32px;border-radius:var(--radius-md);display:flex;align-items:center;
+          justify-content:center;font-size:16px;color:var(--text-muted);background:var(--surface-2);
+          border:1px solid var(--border);cursor:pointer;transition:var(--transition);opacity:.4;
+          font-family:inherit;" onmouseover="if(!this.disabled)this.style.background='var(--brand-red)';if(!this.disabled)this.style.color='#fff';"
+          onmouseout="this.style.background='var(--surface-2)';this.style.color='var(--text-muted)';">
+          &#8592;
+        </button>
+        <button id="navFwdBtn" onclick="goForward()" title="Go Forward" disabled
+          style="width:32px;height:32px;border-radius:var(--radius-md);display:flex;align-items:center;
+          justify-content:center;font-size:16px;color:var(--text-muted);background:var(--surface-2);
+          border:1px solid var(--border);cursor:pointer;transition:var(--transition);opacity:.4;
+          font-family:inherit;" onmouseover="if(!this.disabled)this.style.background='var(--brand-red)';if(!this.disabled)this.style.color='#fff';"
+          onmouseout="this.style.background='var(--surface-2)';this.style.color='var(--text-muted)';">
+          &#8594;
+        </button>
+      </div>
+      <button class="topbar-hamburger" onclick="openMobSidebar()">&#9776;</button>
+      <div class="topbar-title">
+        <span class="title-icon" id="tbIcon">🏠</span>
+        <span id="tbTitle">Dashboard</span>
+      </div>
+      <div class="topbar-actions">
+        <!-- Theme Toggle -->
+        <div class="tb-action-btn" onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Dark/Light Mode">🌙</div>
+        <!-- File DB Indicator -->
+        <div id="fileDbIndicator" onclick="gotoPage('datamanage',null)" title="Using browser localStorage"
+          style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:var(--radius-md);
+          background:var(--surface-2);border:1px solid var(--border);font-size:12px;cursor:pointer;
+          transition:var(--transition);" onmouseover="this.style.borderColor='var(--brand-red)'" onmouseout="this.style.borderColor='var(--border)'">
+          &#128190; <span style="color:var(--text-muted);font-size:11px;">localStorage</span>
+        </div>
+        <!-- Logo Upload -->
+        <label class="tb-action-btn tb-logo-upload" title="Upload Logo">
+          🖼️
+          <input type="file" accept="image/*" style="display:none;" onchange="handleLogoUpload(event)">
+        </label>
+        <!-- User Badge -->
+        <div class="topbar-user" onclick="toggleUserDropdown()">
+          <div class="tu-avatar" id="tuAvatar">AD</div>
+          <div class="tu-info">
+            <div class="tu-name" id="tuName">Admin</div>
+            <div class="tu-role" id="tuRole">Administrator</div>
+          </div>
+          <span class="tu-caret">▾</span>
+          <div class="user-dropdown hidden" id="userDropdown">
+            <div class="ud-item" onclick="gotoPage('settings',null)">⚙️ Settings</div>
+            <div class="ud-item" onclick="openChangePassword()">🔑 Change Password</div>
+            <div class="ud-divider"></div>
+            <div class="ud-item danger" onclick="doLogout()">🚪 Logout</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Pages -->
+    <div class="page-content">
+
+      <!-- ════════════════════════════════════
+           DASHBOARD
+           ════════════════════════════════════ -->
+      <div class="page active" id="page-dashboard">
+
+        <div class="welcome-banner">
+          <div class="wb-decor wb-decor-1"></div>
+          <div class="wb-decor wb-decor-2"></div>
+          <div class="wb-decor wb-decor-3"></div>
+          <div class="wb-content">
+            <div class="wb-greeting" id="wbGreeting">Good Morning! 👋</div>
+            <div class="wb-sub">Welcome to Ednex Consultant Management System</div>
+            <div class="wb-ceo">
+              <div class="wb-ceo-avatar">⚖️</div>
+              <div class="wb-ceo-info">
+                <div class="wb-ceo-name">Asfandyar Rabbani Advocate</div>
+                <div class="wb-ceo-title">Chief Executive Officer</div>
+              </div>
+            </div>
+            <div class="wb-links">
+              <a href="https://www.facebook.com/profile.php?id=61567980281187" target="_blank" class="wb-link">
+                <span>🔵</span> Official Page
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=61587981880912" target="_blank" class="wb-link">
+                <span>👤</span> CEO Profile
+              </a>
+              <a href="https://maps.app.goo.gl/Lz4hWf4DJrVPAaKw7" target="_blank" class="wb-link">
+                <span>📍</span> Our Location
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <!-- Bottom Grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">⚡ Quick Actions</div></div>
+            <div class="card-body">
+              <div class="qa-grid">
+                <div class="qa-btn" onclick="gotoPage('clients',null);setTimeout(()=>openModal('client'),100)">
+                  <span class="qa-icon">➕</span>New Client
+                </div>
+                <div class="qa-btn" onclick="gotoPage('appointments',null);setTimeout(()=>openModal('appointment'),100)">
+                  <span class="qa-icon">📅</span>Book Appt.
+                </div>
+                <div class="qa-btn" onclick="gotoPage('messages',null)">
+                  <span class="qa-icon">💬</span>WhatsApp
+                </div>
+                <div class="qa-btn" onclick="exportAllCSV()">
+                  <span class="qa-icon">💾</span>Backup
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Clients -->
+          <div class="card" style="grid-column:span 2;">
+            <div class="card-header">
+              <div class="card-title">👥 Recent Clients</div>
+              <button class="btn btn-ghost btn-sm" onclick="gotoPage('clients',null)">View All →</button>
+            </div>
+            <div class="card-body" id="recentClientsList"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ════════════════════════════════════
+           CLIENTS
+           ════════════════════════════════════ -->
+      <div class="page" id="page-clients">
+        <div class="flex justify-between items-center mb-16 flex-wrap gap-12">
+          <h2 style="font-size:18px;font-weight:800;color:var(--text-primary);">👥 Client Management</h2>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="openModal('client')">➕ Add Client</button>
+            <button class="btn btn-success btn-sm" onclick="exportCSV('clients')">📥 Export CSV</button>
+          </div>
+        </div>
+        <div class="tbl-wrapper">
+          <div class="tbl-toolbar">
+            <div class="search-bar">
+              <span class="si">🔍</span>
+              <input type="text" placeholder="Search clients…" oninput="filterTable('clients',this.value)">
+            </div>
+            <div class="tbl-count" id="cnt-clients">0 records</div>
+          </div>
+          <div id="tbl-clients"></div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           APPLICATIONS
+           ════════════════════════════════════ -->
+      <div class="page" id="page-applications">
+        <div class="flex justify-between items-center mb-16 flex-wrap gap-12">
+          <h2 style="font-size:18px;font-weight:800;">📄 Applications</h2>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="openModal('application')">➕ New Application</button>
+            <button class="btn btn-success btn-sm" onclick="exportCSV('applications')">📥 Export CSV</button>
+          </div>
+        </div>
+        <div class="tbl-wrapper">
+          <div class="tbl-toolbar">
+            <div class="search-bar">
+              <span class="si">🔍</span>
+              <input type="text" placeholder="Search applications…" oninput="filterTable('applications',this.value)">
+            </div>
+            <div class="tbl-count" id="cnt-applications">0 records</div>
+          </div>
+          <div id="tbl-applications"></div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           CASES
+           ════════════════════════════════════ -->
+      <div class="page" id="page-cases">
+        <div class="flex justify-between items-center mb-16 flex-wrap gap-12">
+          <h2 style="font-size:18px;font-weight:800;">⚖️ Cases</h2>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="openModal('case')">➕ Add Case</button>
+            <button class="btn btn-success btn-sm" onclick="exportCSV('cases')">📥 Export</button>
+          </div>
+        </div>
+        <div class="tbl-wrapper">
+          <div class="tbl-toolbar">
+            <div class="search-bar">
+              <span class="si">🔍</span>
+              <input type="text" placeholder="Search cases…" oninput="filterTable('cases',this.value)">
+            </div>
+            <div class="tbl-count" id="cnt-cases">0 records</div>
+          </div>
+          <div id="tbl-cases"></div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           APPOINTMENTS
+           ════════════════════════════════════ -->
+      <div class="page" id="page-appointments">
+        <div class="flex justify-between items-center mb-16 flex-wrap gap-12">
+          <h2 style="font-size:18px;font-weight:800;">📅 Appointments</h2>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="openModal('appointment')">➕ New Appointment</button>
+            <button class="btn btn-success btn-sm" onclick="exportCSV('appointments')">📥 Export</button>
+          </div>
+        </div>
+        <div class="tbl-wrapper">
+          <div class="tbl-toolbar">
+            <div class="search-bar">
+              <span class="si">🔍</span>
+              <input type="text" placeholder="Search appointments…" oninput="filterTable('appointments',this.value)">
+            </div>
+            <div class="tbl-count" id="cnt-appointments">0 records</div>
+          </div>
+          <div id="tbl-appointments"></div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           WHATSAPP MESSAGES
+           ════════════════════════════════════ -->
+      <div class="page" id="page-messages">
+        <h2 style="font-size:18px;font-weight:800;margin-bottom:20px;">💬 WhatsApp Messaging</h2>
+
+        <div class="wa-config-card">
+          <div class="wa-status">
+            <div class="wa-dot"></div>
+            <span style="font-size:12px;font-weight:700;color:#25d366;">WhatsApp Connected</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Consultancy's Official Number</div>
+          <div class="wa-number-display" id="waNumberDisplay">Not configured</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title">📤 Send Message</div></div>
+            <div class="card-body">
+              <div class="form-row col-1" style="gap:14px;">
+                <div class="form-field">
+                  <label class="field-label">Select Client</label>
+                  <select class="field-input" id="waMsgClient" onchange="prefillWaNumber()">
+                    <option value="">— Choose Client —</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="field-label">Recipient WhatsApp Number</label>
+                  <input type="text" class="field-input" id="waMsgNumber" value="+92 " placeholder="+92 300 0000000">
+                </div>
+                <div class="form-field">
+                  <label class="field-label">Template / Message</label>
+                  <select class="field-input" id="waMsgTemplate" onchange="applyTemplate()">
+                    <option value="">— Choose Template —</option>
+                    <option value="appt">Appointment Reminder</option>
+                    <option value="docs">Documents Required</option>
+                    <option value="ready">Visa Ready</option>
+                    <option value="followup">Follow Up</option>
+                    <option value="custom">Custom Message</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="field-label">Message</label>
+                  <textarea class="field-input" id="waMsgText" rows="4" placeholder="Type your message here…"></textarea>
+                </div>
+                <button class="btn btn-success w-full" onclick="sendWhatsApp()">
+                  💬 Send via WhatsApp
+                </button>
+              </div>
+              <p class="field-hint mt-8" style="font-size:11px;color:var(--text-muted);">
+                ℹ️ Message will open WhatsApp Web / App with pre-filled text to be sent to the client.
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div class="card-title">📋 Message Log</div></div>
+            <div class="card-body">
+              <div id="msgLog" style="max-height:380px;overflow-y:auto;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           FOREIGN EDUCATION
+           ════════════════════════════════════ -->
+      <div class="page" id="page-foreignedu">
+        <h2 style="font-size:18px;font-weight:800;margin-bottom:20px;">🎓 Foreign Education Module</h2>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+          <!-- Country Management -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🌍 Country Management</div>
+              <button class="btn btn-primary btn-sm" onclick="openAddCountryModal()">➕ Add Country</button>
+            </div>
+            <div class="card-body">
+              <div id="countryChips" style="min-height:60px;"></div>
+            </div>
+          </div>
+
+          <!-- University Finder -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">🏛️ Universities by Country</div></div>
+            <div class="card-body">
+              <div class="form-field mb-16">
+                <label class="field-label">Select Country</label>
+                <select class="field-input" id="uniCountrySelect" onchange="renderUniversities()">
+                  <option value="">— Choose Country —</option>
+                </select>
+              </div>
+              <div id="uniList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Application Priority -->
+        <div class="card mb-20">
+          <div class="card-header">
+            <div class="card-title">📌 Education Application — Priority Selection</div>
+            <button class="btn btn-primary btn-sm" onclick="openModal('educationApp')">➕ New Application</button>
+          </div>
+          <div class="card-body">
+            <div id="tbl-educationApps"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           RELIGIOUS SERVICES
+           ════════════════════════════════════ -->
+      <div class="page" id="page-religious">
+        <div class="flex justify-between items-center mb-20 flex-wrap gap-12">
+          <h2 style="font-size:18px;font-weight:800;">🕌 Religious Services</h2>
+          <button class="btn btn-primary" onclick="openModal('religiousApp')">➕ New Booking</button>
+        </div>
+
+        <div id="relCategories"></div>
+
+        <div class="tbl-wrapper mt-20">
+          <div class="card-header" style="border-radius:var(--radius-lg) var(--radius-lg) 0 0;">
+            <div class="card-title">📋 Religious Service Bookings</div>
+            <button class="btn btn-success btn-sm" onclick="exportCSV('religiousBookings')">📥 Export</button>
+          </div>
+          <div id="tbl-religiousBookings"></div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           ALL SERVICES
+           ════════════════════════════════════ -->
+      <div class="page" id="page-services">
+        <div class="flex justify-between items-center mb-16 flex-wrap gap-12">
+          <h2 style="font-size:18px;font-weight:800;">📋 Services Management</h2>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="openModal('service')">➕ Add Service</button>
+            <button class="btn btn-success btn-sm" onclick="exportCSV('services')">📥 Export</button>
+          </div>
+        </div>
+        <div class="tbl-wrapper">
+          <div class="tbl-toolbar">
+            <div class="search-bar">
+              <span class="si">🔍</span>
+              <input type="text" placeholder="Search services…" oninput="filterTable('services',this.value)">
+            </div>
+            <div class="tbl-count" id="cnt-services">0 records</div>
+          </div>
+          <div id="tbl-services"></div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           USER MANAGEMENT (Super Admin only)
+           ════════════════════════════════════ -->
+      <div class="page" id="page-users">
+        <div class="flex justify-between items-center mb-16 flex-wrap gap-12">
+          <h2 style="font-size:18px;font-weight:800;">👤 User Management</h2>
+          <button class="btn btn-primary" id="addUserBtn" onclick="openModal('user')">➕ Add User</button>
+        </div>
+        <div id="userAccessNote" class="card mb-16" style="display:none;">
+          <div class="card-body" style="color:var(--brand-red);font-size:13px;">
+            ⚠️ <strong>Access Restricted.</strong> Only Super Admins can manage users and reset passwords.
+          </div>
+        </div>
+        <div class="tbl-wrapper">
+          <div id="tbl-users"></div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           SOCIAL LINKS
+           ════════════════════════════════════ -->
+      <div class="page" id="page-social">
+        <div class="flex justify-between items-center mb-20 flex-wrap gap-12">
+          <h2 style="font-size:18px;font-weight:800;">🔗 Social Links Management</h2>
+          <button class="btn btn-primary" onclick="openModal('social')">➕ Add Link</button>
+        </div>
+        <div class="card mb-20">
+          <div class="card-header"><div class="card-title">🌐 Active Links</div></div>
+          <div class="card-body" id="socialLinksList"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">🔍 Preview (Contact Section)</div></div>
+          <div class="card-body" id="socialPreview"></div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           DATA MANAGEMENT
+           ════════════════════════════════════ -->
+      <div class="page" id="page-datamanage">
+        <h2 style="font-size:18px;font-weight:800;margin-bottom:20px;">🗃️ Data Management</h2>
+
+        <!-- File Database Card -->
+        <div class="card mb-20">
+          <div class="card-header">
+            <div class="card-title">📁 File Database (JSON)</div>
+            <span class="badge badge-info" style="font-size:10px;">Chrome / Edge</span>
+          </div>
+          <div class="card-body" id="fileDbStatusCard">Loading…</div>
+        </div>
+
+        <div class="info-grid-2 mb-20">
+          <div class="card">
+            <div class="card-header"><div class="card-title">📊 Data Summary</div></div>
+            <div class="card-body" id="dataSummary"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">📥 Export Data</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+              <button class="btn btn-success w-full" onclick="exportAllCSV()">💾 Export All (Full Backup)</button>
+              <button class="btn btn-ghost w-full btn-sm" onclick="exportCSV('clients')">📥 Clients CSV</button>
+              <button class="btn btn-ghost w-full btn-sm" onclick="exportCSV('services')">📥 Services CSV</button>
+              <button class="btn btn-ghost w-full btn-sm" onclick="exportCSV('cases')">📥 Cases CSV</button>
+              <button class="btn btn-ghost w-full btn-sm" onclick="exportCSV('appointments')">📥 Appointments CSV</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">📂 Import CSV</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+              <label class="btn btn-outline w-full" style="cursor:pointer;">
+                📂 Import Clients <input type="file" accept=".csv" style="display:none;" onchange="importCSV(event,'clients')">
+              </label>
+              <label class="btn btn-outline w-full" style="cursor:pointer;">
+                📂 Import Services <input type="file" accept=".csv" style="display:none;" onchange="importCSV(event,'services')">
+              </label>
+              <label class="btn btn-outline w-full" style="cursor:pointer;">
+                📂 Import Cases <input type="file" accept=".csv" style="display:none;" onchange="importCSV(event,'cases')">
+              </label>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title" style="color:#e74c3c;">⚠️ Danger Zone</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+              <button class="btn btn-danger w-full" onclick="confirmClearAll()">🗑️ Clear All Data</button>
+              <button class="btn btn-warning w-full" onclick="loadSampleData()">🔄 Reload Sample Data</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           BACKUP & RECOVERY
+           ════════════════════════════════════ -->
+      <div class="page" id="page-recovery">
+        <h2 style="font-size:18px;font-weight:800;margin-bottom:20px;">🔄 Backup & Recovery</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title">💾 Create Backup</div></div>
+            <div class="card-body">
+              <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Download a complete backup of all your data as a CSV file.</p>
+              <button class="btn btn-success w-full" onclick="exportAllCSV()">📥 Download Full Backup</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">🖼️ Logo Management</div></div>
+            <div class="card-body">
+              <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Upload a custom company logo (PNG/JPG). Saved for this session.</p>
+              <label class="btn btn-outline w-full" style="cursor:pointer;">
+                🖼️ Upload Logo
+                <input type="file" accept="image/*" style="display:none;" onchange="handleLogoUpload(event)">
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">📂 Restore from CSV</div></div>
+          <div class="card-body">
+            <div class="upload-zone" id="dropZone"
+              ondragover="dzOver(event)" ondragleave="dzLeave(event)" ondrop="dzDrop(event)"
+              onclick="document.getElementById('recFile').click()">
+              <div class="uz-icon">📂</div>
+              <div class="uz-text">Drop your backup CSV here or click to browse</div>
+              <div class="uz-sub">Supports full backup CSV exported from this system</div>
+            </div>
+            <input type="file" id="recFile" accept=".csv" style="display:none;" onchange="importCSV(event,'all')">
+            <div id="recStatus" style="margin-top:14px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+           SETTINGS
+           ════════════════════════════════════ -->
+      <div class="page" id="page-settings">
+        <h2 style="font-size:18px;font-weight:800;margin-bottom:20px;">⚙️ Settings</h2>
+
+        <div class="card mb-20">
+          <div class="card-body">
+
+            <!-- Appearance -->
+            <div class="settings-section">
+              <div class="settings-section-title">🎨 Appearance</div>
+              <div class="settings-row">
+                <div class="sr-info">
+                  <h4>Theme Mode</h4>
+                  <p>Switch between Light and Dark mode</p>
+                </div>
+                <div class="theme-pill-wrap">
+                  <div class="theme-pill active" id="tpLight" onclick="setTheme('light')">
+                    <div class="tp-dot" style="background:#f4f6f9;border:1px solid #ccc;"></div> Light
+                  </div>
+                  <div class="theme-pill" id="tpDark" onclick="setTheme('dark')">
+                    <div class="tp-dot" style="background:#1c2130;"></div> Dark
+                  </div>
+                </div>
+              </div>
+              <div class="settings-row">
+                <div class="sr-info">
+                  <h4>Compact Sidebar</h4>
+                  <p>Collapse sidebar to icon-only mode</p>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="toggleSidebar()">Toggle</button>
+              </div>
+            </div>
+
+            <!-- WhatsApp -->
+            <div class="settings-section">
+              <div class="settings-section-title">💬 WhatsApp Integration</div>
+              <div class="settings-row">
+                <div class="sr-info">
+                  <h4>Official WhatsApp Number</h4>
+                  <p>Messages will be sent from this number (country code required)</p>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <input type="text" class="field-input" id="waConfigInput" placeholder="+92 300 0000000" style="width:200px;">
+                  <button class="btn btn-success btn-sm" onclick="saveWaNumber()">Save</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Account -->
+            <div class="settings-section">
+              <div class="settings-section-title">🔑 Account Security</div>
+              <div class="settings-row">
+                <div class="sr-info">
+                  <h4>Change Your Password</h4>
+                  <p>Update your account password</p>
+                </div>
+                <button class="btn btn-warning btn-sm" onclick="openChangePassword()">Change Password</button>
+              </div>
+              <div class="settings-row" id="superAdminPwRow">
+                <div class="sr-info">
+                  <h4>Reset User Passwords <span class="role-chip role-super">Super Admin</span></h4>
+                  <p>Only Super Admins can reset other users' passwords</p>
+                </div>
+                <button class="btn btn-danger btn-sm" onclick="gotoPage('users',null)">Manage Users</button>
+              </div>
+            </div>
+
+            <!-- About -->
+            <div class="settings-section">
+              <div class="settings-section-title">ℹ️ About</div>
+              <div class="info-grid-2">
+                <div class="info-item"><div class="ii-label">Application</div><div class="ii-value">Ednex Consultant v2.0</div></div>
+                <div class="info-item"><div class="ii-label">Storage</div><div class="ii-value">localStorage + CSV</div></div>
+                <div class="info-item"><div class="ii-label">Tech Stack</div><div class="ii-value">Pure HTML5/CSS3/JS</div></div>
+                <div class="info-item"><div class="ii-label">Developer</div><div class="ii-value" onclick="showDevCard()" style="cursor:pointer;color:var(--brand-red);">Humam Khalil ↗</div></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-left">© 2025 Ednex Consultant (Peshawar) · All Rights Reserved</div>
+      <div class="footer-center">
+        <a href="https://maps.app.goo.gl/Lz4hWf4DJrVPAaKw7" target="_blank" class="footer-icon-link">📍 Our Location</a>
+        <a href="https://www.facebook.com/profile.php?id=61567980281187" target="_blank" class="footer-icon-link">🔵 Facebook</a>
+        <a href="https://wa.me/923028492763" target="_blank" class="footer-icon-link">💬 WhatsApp</a>
+      </div>
+      <div class="footer-dev-btn" onclick="showDevCard()">👨‍💻 Developer Info</div>
+    </footer>
+  </div>
+</div>
+
+<!-- ================================================================
+     GENERIC MODAL
+     ================================================================ -->
+<div class="modal-backdrop hidden" id="genericModal">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Modal</div>
+      <div class="modal-close" onclick="closeModal()">✕</div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="modalSaveBtn" onclick="saveModal()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-backdrop hidden" id="confirmModal">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <div class="modal-title">⚠️ Confirm</div>
+      <div class="modal-close" onclick="closeConfirm()">✕</div>
+    </div>
+    <div class="confirm-body" id="confirmBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" onclick="runConfirm()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Developer Card -->
+<div class="dev-popup-wrap hidden" id="devPopup">
+  <div class="dev-card">
+    <div class="dev-card-banner"></div>
+    <div class="dev-card-avatar">HK</div>
+    <div class="dev-card-body">
+      <div class="dev-card-name">Humam Khalil</div>
+      <div class="dev-card-title">Full-Stack Web Developer</div>
+      <div class="dev-card-loc">📍 Peshawar, Pakistan</div>
+      <div class="dev-links">
+        <a href="https://wa.me/923028492763" target="_blank" class="dev-link">
+          <span class="dev-link-icon">💬</span>
+          <div class="dev-link-info"><div class="dev-link-label">WhatsApp</div><div class="dev-link-value">+92 302 849 2763</div></div>
+        </a>
+        <a href="https://humamkhalil.netlify.app" target="_blank" class="dev-link">
+          <span class="dev-link-icon">🌐</span>
+          <div class="dev-link-info"><div class="dev-link-label">Portfolio</div><div class="dev-link-value">humamkhalil.netlify.app</div></div>
+        </a>
+        <a href="https://linkedin.com/in/humam-khalil-1122b0344" target="_blank" class="dev-link">
+          <span class="dev-link-icon">💼</span>
+          <div class="dev-link-info"><div class="dev-link-label">LinkedIn</div><div class="dev-link-value">Humam Khalil</div></div>
+        </a>
+        <a href="mailto:humamkhalil11@gmail.com" class="dev-link">
+          <span class="dev-link-icon">📧</span>
+          <div class="dev-link-info"><div class="dev-link-label">Email</div><div class="dev-link-value">humamkhalil11@gmail.com</div></div>
+        </a>
+      </div>
+    </div>
+    <div class="dev-card-close" onclick="closeDevCard()">✕ Close</div>
+  </div>
+</div>
+
+<!-- Toast Stack -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+/* ================================================================
+   CONSTANTS & USERS DB
+   ================================================================ */
+const USERS = [
+  { id:'u1', username:'ADMIN',      password:'asdf123',  role:'admin',   name:'Administrator',     initials:'AD' },
+  { id:'u2', username:'SUPER',      password:'super@123',role:'super',   name:'Super Admin',       initials:'SA' },
+  { id:'u3', username:'GENERAL',    password:'gen@123',  role:'general', name:'General User',      initials:'GU' }
+];
+
+const ROLE_PERMS = {
+  general: ['dashboard','clients','appointments','services','religious','foreignedu'],
+  admin:   ['dashboard','clients','applications','cases','appointments','messages','services','religious','foreignedu','social','datamanage','recovery','settings'],
+  super:   ['dashboard','clients','applications','cases','appointments','messages','services','religious','foreignedu','users','social','datamanage','recovery','settings']
+};
+
+const PAGE_META = {
+  dashboard:     { title:'Dashboard',           icon:'🏠' },
+  clients:       { title:'Client Management',   icon:'👥' },
+  applications:  { title:'Applications',        icon:'📄' },
+  cases:         { title:'Cases',               icon:'⚖️' },
+  appointments:  { title:'Appointments',        icon:'📅' },
+  messages:      { title:'WhatsApp Messaging',  icon:'💬' },
+  foreignedu:    { title:'Foreign Education',   icon:'🎓' },
+  religious:     { title:'Religious Services',  icon:'🕌' },
+  services:      { title:'All Services',        icon:'📋' },
+  users:         { title:'User Management',     icon:'👤' },
+  social:        { title:'Social Links',        icon:'🔗' },
+  datamanage:    { title:'Data Management',     icon:'🗃️' },
+  recovery:      { title:'Backup & Recovery',   icon:'🔄' },
+  settings:      { title:'Settings',            icon:'⚙️' }
+};
+
+/* ================================================================
+   APP STATE
+   ================================================================ */
+let STATE = {
+  session: null,        // logged-in user object
+  currentPage: 'dashboard',
+  sidebarCollapsed: false,
+  theme: 'light',
+  confirmCb: null,
+  currentModal: null,
+  editId: null,
+  searchFilters: {}
+};
+
+/* ================================================================
+   FILE DATABASE STATE
+   ================================================================ */
+let dbFileHandle = null;
+let dbFileName   = '';
+let dbLastSaved  = null;
+
+/* ================================================================
+   DATA STORE
+   ================================================================ */
+let DB = {
+  clients:[],
+  applications:[],
+  cases:[],
+  appointments:[],
+  services:[],
+  religiousBookings:[],
+  educationApps:[],
+  socialLinks:[],
+  countries:[],      // { id, name, emoji, universities:[] }
+  users:[...USERS],  // in-memory copy, editable
+  msgLog:[],
+  waNumber:'',
+};
+
+/* ================================================================
+   INIT
+   ================================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  loadFromStorage();
+  loadThemeFromStorage();
+  loadLogoFromStorage();
+  setGreeting();
+  checkAutoLogin();
+  updateFileStatus();
+});
+
+function checkAutoLogin() {
+  const s = localStorage.getItem('ednex_v2_session');
+  if(s) {
+    try {
+      const sess = JSON.parse(s);
+      const user = DB.users.find(u => u.id === sess.id);
+      if(user) { startSession(user); return; }
+    } catch(e){}
+  }
+}
+
+function setGreeting() {
+  const h = new Date().getHours();
+  const g = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
+  const el = document.getElementById('wbGreeting');
+  if(el) el.textContent = g + '! 👋';
+}
+
+/* ================================================================
+   AUTHENTICATION
+   ================================================================ */
+let selectedRole = 'admin';
+function selectRole(role, el) {
+  selectedRole = role;
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  // prefill placeholder hints
+  const hints = { general:'GENERAL', admin:'ADMIN', super:'SUPER' };
+  document.getElementById('lUsername').placeholder = hints[role] || 'Username';
+}
+
+function doLogin() {
+  const u = document.getElementById('lUsername').value.trim();
+  const p = document.getElementById('lPassword').value.trim();
+  const err = document.getElementById('loginError');
+
+  const user = DB.users.find(x => x.username.toLowerCase() === u.toLowerCase() && x.password === p && x.role === selectedRole);
+  if(user) {
+    err.classList.remove('show');
+    localStorage.setItem('ednex_v2_session', JSON.stringify({id:user.id}));
+    startSession(user);
+  } else {
+    err.classList.remove('show');
+    void err.offsetWidth;
+    err.classList.add('show');
+    document.getElementById('lPassword').value = '';
+  }
+}
+
+function startSession(user) {
+  STATE.session = user;
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('appShell').classList.remove('hidden');
+
+  // Update topbar user
+  document.getElementById('tuAvatar').textContent = user.initials;
+  document.getElementById('tuName').textContent = user.name;
+  document.getElementById('tuRole').textContent = {admin:'Administrator', super:'Super Administrator', general:'General User'}[user.role];
+
+  // Apply role-based nav visibility
+  applyRoleNav(user.role);
+
+  // Init data & render
+  renderAllData();
+  gotoPage('dashboard', document.querySelector('[data-page="dashboard"]'));
+  updateBadges();
+  toast(`Welcome back, ${user.name}! 👋`);
+}
+
+function applyRoleNav(role) {
+  const allowed = ROLE_PERMS[role] || [];
+  document.querySelectorAll('.nav-link[data-page]').forEach(el => {
+    const pg = el.dataset.page;
+    el.style.display = allowed.includes(pg) ? '' : 'none';
+  });
+
+  // User management table restrictions
+  const addUserBtn = document.getElementById('addUserBtn');
+  const userNote = document.getElementById('userAccessNote');
+  if(role !== 'super') {
+    if(addUserBtn) addUserBtn.style.display = 'none';
+    if(userNote) userNote.style.display = 'block';
+  } else {
+    if(addUserBtn) addUserBtn.style.display = '';
+    if(userNote) userNote.style.display = 'none';
+  }
+  const superRow = document.getElementById('superAdminPwRow');
+  if(superRow) superRow.style.display = role === 'super' ? '' : 'none';
+}
+
+function doLogout() {
+  showConfirm('Are you sure you want to logout?', () => {
+    localStorage.removeItem('ednex_v2_session');
+    STATE.session = null;
+    document.getElementById('appShell').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('lUsername').value = '';
+    document.getElementById('lPassword').value = '';
+    toast('Logged out successfully','info');
+  });
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Enter') {
+    const ls = document.getElementById('loginScreen');
+    if(ls && !ls.classList.contains('hidden')) doLogin();
+  }
+  // Escape handled in global listener below (avoid duplicate)
+});
+
+/* ================================================================
+   NAVIGATION HISTORY
+   ================================================================ */
+let navHistory = [];
+let navIndex   = -1;
+let _navSkip   = false; // flag to prevent history push during back/fwd
+
+function updateNavButtons() {
+  const back = document.getElementById('navBackBtn');
+  const fwd  = document.getElementById('navFwdBtn');
+  if (!back || !fwd) return;
+
+  const canBack = navIndex > 0;
+  const canFwd  = navIndex < navHistory.length - 1;
+
+  back.disabled = !canBack;
+  back.style.opacity = canBack ? '1' : '0.35';
+  back.style.cursor  = canBack ? 'pointer' : 'default';
+  if (canBack) {
+    const prev = PAGE_META[navHistory[navIndex - 1]] || {};
+    back.title = 'Back: ' + (prev.title || navHistory[navIndex - 1]);
+  } else {
+    back.title = 'Nothing to go back to';
+  }
+
+  fwd.disabled = !canFwd;
+  fwd.style.opacity = canFwd ? '1' : '0.35';
+  fwd.style.cursor  = canFwd ? 'pointer' : 'default';
+  if (canFwd) {
+    const next = PAGE_META[navHistory[navIndex + 1]] || {};
+    fwd.title = 'Forward: ' + (next.title || navHistory[navIndex + 1]);
+  } else {
+    fwd.title = 'Nothing to go forward to';
+  }
+}
+
+function goBack() {
+  if (navIndex <= 0) return;
+  navIndex--;
+  _navSkip = true;
+  gotoPage(navHistory[navIndex], null);
+  _navSkip = false;
+  updateNavButtons();
+}
+
+function goForward() {
+  if (navIndex >= navHistory.length - 1) return;
+  navIndex++;
+  _navSkip = true;
+  gotoPage(navHistory[navIndex], null);
+  _navSkip = false;
+  updateNavButtons();
+}
+
+/* ================================================================
+   NAVIGATION
+   ================================================================ */
+function gotoPage(pageId, navEl) {
+  const role = STATE.session?.role;
+  const allowed = ROLE_PERMS[role] || [];
+  if(!allowed.includes(pageId)) {
+    toast('Access denied for your role','error');
+    return;
+  }
+
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + pageId);
+  if(target) target.classList.add('active');
+
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+  if(navEl) navEl.classList.add('active');
+  else {
+    const nl = document.querySelector(`.nav-link[data-page="${pageId}"]`);
+    if(nl) nl.classList.add('active');
+  }
+
+  const meta = PAGE_META[pageId] || {};
+  document.getElementById('tbIcon').textContent = meta.icon || '📄';
+  document.getElementById('tbTitle').textContent = meta.title || pageId;
+
+  STATE.currentPage = pageId;
+
+  // Track navigation history (skip when called from goBack/goForward)
+  if (!_navSkip) {
+    // If we navigated away from a forward position, truncate forward history
+    if (navIndex < navHistory.length - 1) {
+      navHistory = navHistory.slice(0, navIndex + 1);
+    }
+    // Only push if different from current
+    if (navHistory[navIndex] !== pageId) {
+      navHistory.push(pageId);
+      navIndex = navHistory.length - 1;
+    }
+    updateNavButtons();
+  }
+
+  closeMobSidebar();
+  refreshPage(pageId);
+}
+
+function refreshPage(p) {
+  if(p === 'dashboard') { renderStats(); renderRecentClients(); }
+  if(p === 'clients') renderTable('clients');
+  if(p === 'applications') renderTable('applications');
+  if(p === 'cases') renderTable('cases');
+  if(p === 'appointments') renderTable('appointments');
+  if(p === 'services') renderTable('services');
+  if(p === 'religiousBookings') renderTable('religiousBookings');
+  if(p === 'religious') { renderReligiousCategories(); renderTable('religiousBookings'); }
+  if(p === 'foreignedu') { renderCountryChips(); populateCountrySelect(); renderEduApps(); }
+  if(p === 'users') renderUsersTable();
+  if(p === 'social') { renderSocialLinks(); renderSocialPreview(); }
+  if(p === 'datamanage') renderDataSummary();
+  if(p === 'messages') { populateWaClientSelect(); renderMsgLog(); loadWaNumber(); }
+  if(p === 'settings') loadWaConfigInput();
+}
+
+/* ================================================================
+   SIDEBAR
+   ================================================================ */
+function toggleSidebar() {
+  STATE.sidebarCollapsed = !STATE.sidebarCollapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed', STATE.sidebarCollapsed);
+  document.getElementById('pageWrapper').classList.toggle('expanded', STATE.sidebarCollapsed);
+  document.getElementById('sbCollapseIcon').textContent = STATE.sidebarCollapsed ? '▶' : '◀';
+}
+function openMobSidebar() {
+  document.getElementById('sidebar').classList.add('mob-open');
+  document.getElementById('mobOverlay').classList.add('show');
+}
+function closeMobSidebar() {
+  document.getElementById('sidebar').classList.remove('mob-open');
+  document.getElementById('mobOverlay').classList.remove('show');
+}
+
+/* ================================================================
+   THEME
+   ================================================================ */
+function loadThemeFromStorage() {
+  const t = localStorage.getItem('ednex_v2_theme') || 'light';
+  setTheme(t, true);
+}
+function setTheme(t, silent) {
+  STATE.theme = t;
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('ednex_v2_theme', t);
+  document.getElementById('themeToggleBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+  document.getElementById('tpLight')?.classList.toggle('active', t === 'light');
+  document.getElementById('tpDark')?.classList.toggle('active', t === 'dark');
+  if(!silent) toast(`${t === 'dark' ? '🌙 Dark' : '☀️ Light'} mode activated`);
+}
+function toggleTheme() { setTheme(STATE.theme === 'dark' ? 'light' : 'dark'); }
+
+/* ================================================================
+   LOGO
+   ================================================================ */
+function handleLogoUpload(e) {
+  const f = e.target.files[0];
+  if(!f || !f.type.startsWith('image/')) { toast('Please upload a valid image','error'); return; }
+  const r = new FileReader();
+  r.onload = ev => {
+    const d = ev.target.result;
+    localStorage.setItem('ednex_v2_logo', d);
+    applyLogo(d);
+    toast('Logo updated! 🖼️');
+  };
+  r.readAsDataURL(f);
+}
+function loadLogoFromStorage() {
+  const d = localStorage.getItem('ednex_v2_logo');
+  if(d) applyLogo(d);
+}
+function applyLogo(d) {
+  const boxes = [document.getElementById('sbLogo'), document.getElementById('loginLogo')];
+  boxes.forEach(b => { if(b) b.innerHTML = `<img src="${d}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`; });
+}
+
+/* ================================================================
+   DATA PERSISTENCE
+   ================================================================ */
+function saveToStorage() {
+  localStorage.setItem('ednex_v2_db', JSON.stringify(DB));
+  if (dbFileHandle) saveToFile(true); // also persist to JSON file
+}
+function loadFromStorage() {
+  const s = localStorage.getItem('ednex_v2_db');
+  if(s) {
+    try {
+      const parsed = JSON.parse(s);
+      // Merge carefully — keep saved users (with updated passwords), fall back to USERS constant
+      const savedUsers = (parsed.users && parsed.users.length) ? parsed.users : [...USERS];
+      DB = Object.assign({}, DB, parsed);
+      DB.users = savedUsers;
+    } catch(e) { DB.users = [...USERS]; }
+  } else {
+    DB.users = [...USERS];
+  }
+  // ensure arrays
+  ['clients','applications','cases','appointments','services','religiousBookings','educationApps','socialLinks','countries','msgLog'].forEach(k => {
+    if(!Array.isArray(DB[k])) DB[k] = [];
+  });
+  if(!DB.waNumber) DB.waNumber = '';
+  if(DB.clients.length === 0) loadSampleData(true);
+}
+
+/* ================================================================
+   FILE DATABASE — File System Access API (Chrome / Edge)
+   ================================================================ */
+function isFileApiSupported() {
+  return 'showOpenFilePicker' in window;
+}
+
+async function connectDatabaseFile() {
+  if (!isFileApiSupported()) { toast('File API requires Chrome or Edge.', 'error'); return; }
+  try {
+    const [handle] = await window.showOpenFilePicker({
+      types: [{ description: 'JSON Database', accept: { 'application/json': ['.json'] } }],
+      multiple: false
+    });
+    dbFileHandle = handle;
+    dbFileName   = handle.name;
+    localStorage.setItem('ednex_v2_lastFile', handle.name);
+    await loadFromFile();
+    updateFileStatus();
+    toast('📁 Connected: ' + handle.name);
+  } catch(e) {
+    if (e.name !== 'AbortError') toast('Error: ' + e.message, 'error');
+  }
+}
+
+async function createDatabaseFile() {
+  if (!isFileApiSupported()) { toast('File API requires Chrome or Edge.', 'error'); return; }
+  try {
+    const handle = await window.showSaveFilePicker({
+      suggestedName: 'ednex_database.json',
+      types: [{ description: 'JSON Database', accept: { 'application/json': ['.json'] } }]
+    });
+    dbFileHandle = handle;
+    dbFileName   = handle.name;
+    localStorage.setItem('ednex_v2_lastFile', handle.name);
+    await saveToFile(true);
+    updateFileStatus();
+    toast('✅ File created: ' + handle.name);
+  } catch(e) {
+    if (e.name !== 'AbortError') toast('Error: ' + e.message, 'error');
+  }
+}
+
+async function saveToFile(silent) {
+  if (!dbFileHandle) return;
+  try {
+    const writable = await dbFileHandle.createWritable();
+    await writable.write(JSON.stringify(DB, null, 2));
+    await writable.close();
+    dbLastSaved = new Date();
+    if (!silent) { updateFileStatus(); toast('💾 Saved to file'); }
+  } catch(e) {
+    if (e.name === 'NotAllowedError') {
+      toast('Write permission lost — reconnect the file.', 'error');
+      dbFileHandle = null; updateFileStatus();
+    }
+  }
+}
+
+async function loadFromFile() {
+  if (!dbFileHandle) return;
+  try {
+    const file = await dbFileHandle.getFile();
+    const text = await file.text();
+    if (!text.trim()) { await saveToFile(true); return; }
+    const parsed = JSON.parse(text);
+    const savedUsers = (parsed.users && parsed.users.length) ? parsed.users : [...USERS];
+    DB = Object.assign({}, DB, parsed);
+    DB.users = savedUsers;
+    ['clients','applications','cases','appointments','services','religiousBookings','educationApps','socialLinks','countries','msgLog']
+      .forEach(k => { if (!Array.isArray(DB[k])) DB[k] = []; });
+    if (!DB.waNumber) DB.waNumber = '';
+    localStorage.setItem('ednex_v2_db', JSON.stringify(DB));
+    if (STATE.session) { renderAllData(); updateBadges(); }
+    toast('🔄 Loaded from file: ' + dbFileName);
+  } catch(e) {
+    toast('File read error: ' + e.message, 'error');
+  }
+}
+
+function disconnectDatabase() {
+  showConfirm('Disconnect the database file? Data will continue saving to localStorage only.', () => {
+    dbFileHandle = null; dbFileName = ''; dbLastSaved = null;
+    localStorage.removeItem('ednex_v2_lastFile');
+    updateFileStatus();
+    toast('File database disconnected.', 'info');
+  });
+}
+
+function updateFileStatus() {
+  const ind = document.getElementById('fileDbIndicator');
+  if (ind) {
+    ind.innerHTML = dbFileHandle
+      ? '&#128193; <span style="color:#27ae60;font-weight:700;font-size:11px;">' + dbFileName + '</span>'
+      : '&#128190; <span style="color:var(--text-muted);font-size:11px;">localStorage</span>';
+    ind.title = dbFileHandle ? 'File DB: ' + dbFileName : 'Using browser localStorage';
+  }
+  renderFileDbCard();
+}
+
+function renderFileDbCard() {
+  const el = document.getElementById('fileDbStatusCard');
+  if (!el) return;
+  const lastFile = localStorage.getItem('ednex_v2_lastFile') || '';
+  if (dbFileHandle) {
+    el.innerHTML =
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">'
+      + '<div style="width:10px;height:10px;border-radius:50%;background:#27ae60;box-shadow:0 0 0 4px rgba(39,174,96,.15);flex-shrink:0;"></div>'
+      + '<div><div style="font-size:14px;font-weight:700;color:#27ae60;">&#128994; File Database Connected</div>'
+      + '<div style="font-size:12px;color:var(--text-muted);">&#128193; ' + dbFileName
+      + (dbLastSaved ? ' &nbsp;·&nbsp; Last saved: ' + dbLastSaved.toLocaleTimeString() : '') + '</div></div></div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+      + '<button class="btn btn-success btn-sm" onclick="saveToFile()">&#128190; Save Now</button>'
+      + '<button class="btn btn-ghost btn-sm" onclick="loadFromFile()">&#128260; Reload from File</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="disconnectDatabase()">&#9940; Disconnect</button></div>';
+  } else {
+    el.innerHTML =
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">'
+      + '<div style="width:10px;height:10px;border-radius:50%;background:var(--brand-amber);flex-shrink:0;"></div>'
+      + '<div><div style="font-size:14px;font-weight:700;color:var(--brand-amber);">&#128993; Not Connected &mdash; Using localStorage</div>'
+      + '<div style="font-size:12px;color:var(--text-muted);">Connect a JSON file to store data outside the browser.</div></div></div>'
+      + (lastFile ? '<p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Last used: <strong>' + lastFile + '</strong></p>' : '')
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+      + '<button class="btn btn-primary btn-sm" onclick="connectDatabaseFile()">&#128194; Connect Existing File</button>'
+      + '<button class="btn btn-success btn-sm" onclick="createDatabaseFile()">&#10133; Create New File</button></div>'
+      + (!isFileApiSupported() ? '<p style="font-size:11px;color:#e74c3c;margin-top:10px;">&#9888; File API requires Chrome or Edge.</p>' : '');
+  }
+}
+
+/* ================================================================
+   SAMPLE DATA
+   ================================================================ */
+function loadSampleData(quiet) {
+  DB.clients = [
+    {id:uid(),name:'Muhammad Ali Khan',email:'ali@email.com',phone:'0300-1234567',type:'Corporate',status:'Active',address:'Ring Road, Peshawar',joined:'2024-01-15',notes:'Long-term client'},
+    {id:uid(),name:'Fatima Noor',email:'fatima@email.com',phone:'0311-9876543',type:'Individual',status:'Active',address:'Hayatabad, Peshawar',joined:'2024-02-20',notes:'Visa consultation'},
+    {id:uid(),name:'Bilal Enterprises',email:'bilal@email.com',phone:'091-5234567',type:'Business',status:'Active',address:'Saddar, Peshawar',joined:'2024-03-10',notes:'Business registration'},
+    {id:uid(),name:'Sara Ahmed',email:'sara@email.com',phone:'0333-4567890',type:'Individual',status:'Pending',address:'University Town, Peshawar',joined:'2024-04-05',notes:'Document attestation'},
+    {id:uid(),name:'Frontier Trade Co.',email:'ftc@email.com',phone:'0321-7654321',type:'Corporate',status:'Active',address:'Industrial Estate, Peshawar',joined:'2024-05-01',notes:'Import/Export licensing'},
+  ];
+  DB.services = [
+    {id:uid(),name:'Visa Consultation',category:'Immigration',price:'5000',duration:'2 hrs',status:'Available',description:'Professional visa guidance for all countries'},
+    {id:uid(),name:'Business Registration',category:'Corporate',price:'15000',duration:'1 week',status:'Available',description:'Complete SECP registration'},
+    {id:uid(),name:'Document Attestation',category:'Documentation',price:'3000',duration:'3 days',status:'Available',description:'Ministry and embassy attestation'},
+    {id:uid(),name:'Legal Consultation',category:'Legal',price:'8000',duration:'1 hr',status:'Available',description:'One-on-one legal advice'},
+    {id:uid(),name:'Immigration Planning',category:'Immigration',price:'12000',duration:'3 hrs',status:'Available',description:'Complete immigration roadmap'},
+  ];
+  DB.cases = [
+    {id:uid(),caseNo:'EC-2024-001',client:'Muhammad Ali Khan',type:'Corporate',title:'Business License Renewal',status:'Open',priority:'High',assigned:'Asfandyar Rabbani',opened:'2024-01-20',notes:'Following up with TDAP'},
+    {id:uid(),caseNo:'EC-2024-002',client:'Fatima Noor',type:'Immigration',title:'UK Spouse Visa',status:'In Progress',priority:'High',assigned:'Asfandyar Rabbani',opened:'2024-02-25',notes:'Documents submitted'},
+    {id:uid(),caseNo:'EC-2024-003',client:'Bilal Enterprises',type:'Corporate',title:'SECP Company Registration',status:'Closed',priority:'Medium',assigned:'Asfandyar Rabbani',opened:'2024-03-15',notes:'Completed'},
+  ];
+  DB.appointments = [
+    {id:uid(),client:'Muhammad Ali Khan',service:'Legal Consultation',date:'2025-08-01',time:'10:00',status:'Confirmed',notes:'First session'},
+    {id:uid(),client:'Fatima Noor',service:'Visa Consultation',date:'2025-08-02',time:'11:30',status:'Pending',notes:'UK visa review'},
+    {id:uid(),client:'Sara Ahmed',service:'Document Attestation',date:'2025-08-05',time:'14:00',status:'Pending',notes:'HEC follow-up'},
+  ];
+  DB.socialLinks = [
+    {id:uid(),platform:'Facebook',label:'Official Page',url:'https://www.facebook.com/profile.php?id=61567980281187',icon:'🔵',active:true},
+    {id:uid(),platform:'Facebook',label:'CEO Profile',url:'https://www.facebook.com/profile.php?id=61587981880912',icon:'👤',active:true},
+    {id:uid(),platform:'Google Maps',label:'Our Location',url:'https://maps.app.goo.gl/Lz4hWf4DJrVPAaKw7',icon:'📍',active:true},
+    {id:uid(),platform:'WhatsApp',label:'Contact Us',url:'https://wa.me/923028492763',icon:'💬',active:true},
+  ];
+  DB.countries = [
+    {id:uid(),name:'United Kingdom',emoji:'🇬🇧',universities:[
+      {name:'University of Oxford',rank:1},{name:'University of Cambridge',rank:2},{name:'Imperial College London',rank:3},{name:'University of Edinburgh',rank:4}
+    ]},
+    {id:uid(),name:'Canada',emoji:'🇨🇦',universities:[
+      {name:'University of Toronto',rank:1},{name:'McGill University',rank:2},{name:'University of British Columbia',rank:3},{name:'University of Waterloo',rank:4}
+    ]},
+    {id:uid(),name:'Australia',emoji:'🇦🇺',universities:[
+      {name:'Australian National University',rank:1},{name:'University of Melbourne',rank:2},{name:'University of Sydney',rank:3}
+    ]},
+    {id:uid(),name:'Germany',emoji:'🇩🇪',universities:[
+      {name:'TU Munich',rank:1},{name:'LMU Munich',rank:2},{name:'Heidelberg University',rank:3}
+    ]},
+    {id:uid(),name:'Malaysia',emoji:'🇲🇾',universities:[
+      {name:'Universiti Malaya',rank:1},{name:'UPM',rank:2},{name:'UKM',rank:3}
+    ]},
+  ];
+  DB.religiousBookings = [
+    {id:uid(),client:'Muhammad Ali Khan',serviceType:'Hajj',package:'Economy',year:'2025',status:'Registered',phone:'0300-1234567',notes:'Group booking'},
+    {id:uid(),client:'Sara Ahmed',serviceType:'Umrah',package:'Premium',year:'2025',status:'Confirmed',phone:'0333-4567890',notes:'Family of 3'},
+  ];
+  DB.applications = [
+    {id:uid(),appNo:'APP-2024-001',client:'Fatima Noor',type:'Student Visa',country:'UK',university:'University of Manchester',priority1st:'University of Manchester',priority2nd:'University of Leeds',priority3rd:'University of Sheffield',status:'Submitted',date:'2024-03-01'},
+    {id:uid(),appNo:'APP-2024-002',client:'Muhammad Ali Khan',type:'Work Permit',country:'Canada',university:'N/A',priority1st:'N/A',priority2nd:'N/A',priority3rd:'N/A',status:'In Review',date:'2024-04-10'},
+  ];
+  DB.waNumber = '+923028492763';
+  saveToStorage();
+  if(!quiet) {
+    renderAllData();
+    updateBadges();
+    toast('Sample data loaded ✅');
+  }
+}
+
+/* ================================================================
+   RENDER ALL DATA
+   ================================================================ */
+function renderAllData() {
+  renderStats();
+  renderRecentClients();
+  renderTable('clients');
+  renderTable('applications');
+  renderTable('cases');
+  renderTable('appointments');
+  renderTable('services');
+  renderTable('religiousBookings');
+  renderReligiousCategories();
+  renderCountryChips();
+  populateCountrySelect();
+  renderEduApps();
+  renderUsersTable();
+  renderSocialLinks();
+  renderSocialPreview();
+  renderDataSummary();
+  populateWaClientSelect();
+  renderMsgLog();
+  loadWaNumber();
+}
+
+/* ================================================================
+   TABLE CONFIG
+   ================================================================ */
+const TBL = {
+  clients: {
+    cols:[
+      {k:'name',l:'Name'},
+      {k:'phone',l:'Phone'},
+      {k:'email',l:'Email'},
+      {k:'type',l:'Type',r:v=>`<span class="badge badge-info">${h(v)}</span>`},
+      {k:'status',l:'Status',r:v=>`<span class="badge ${v==='Active'?'badge-success':v==='Pending'?'badge-warning':'badge-gray'}">${h(v)}</span>`},
+      {k:'joined',l:'Joined'},
+    ]
+  },
+  applications:{
+    cols:[
+      {k:'appNo',l:'App #'},
+      {k:'client',l:'Client'},
+      {k:'type',l:'Type',r:v=>`<span class="badge badge-purple">${h(v)}</span>`},
+      {k:'country',l:'Country'},
+      {k:'status',l:'Status',r:v=>`<span class="badge ${v==='Submitted'?'badge-success':v==='In Review'?'badge-warning':v==='Approved'?'badge-success':'badge-gray'}">${h(v)}</span>`},
+      {k:'date',l:'Date'},
+    ]
+  },
+  cases:{
+    cols:[
+      {k:'caseNo',l:'Case #'},
+      {k:'client',l:'Client'},
+      {k:'title',l:'Title'},
+      {k:'type',l:'Type',r:v=>`<span class="badge badge-teal">${h(v)}</span>`},
+      {k:'status',l:'Status',r:v=>`<span class="badge ${v==='Open'?'badge-warning':v==='In Progress'?'badge-info':v==='Closed'?'badge-success':'badge-gray'}">${h(v)}</span>`},
+      {k:'priority',l:'Priority',r:v=>`<span class="badge ${v==='High'?'badge-danger':v==='Medium'?'badge-warning':'badge-success'}">${h(v)}</span>`},
+    ]
+  },
+  appointments:{
+    cols:[
+      {k:'client',l:'Client'},
+      {k:'service',l:'Service'},
+      {k:'date',l:'Date'},
+      {k:'time',l:'Time'},
+      {k:'status',l:'Status',r:v=>`<span class="badge ${v==='Confirmed'?'badge-success':v==='Pending'?'badge-warning':v==='Cancelled'?'badge-danger':'badge-gray'}">${h(v)}</span>`},
+    ]
+  },
+  services:{
+    cols:[
+      {k:'name',l:'Service'},
+      {k:'category',l:'Category',r:v=>`<span class="badge badge-purple">${h(v)}</span>`},
+      {k:'price',l:'Price (PKR)',r:v=>`Rs. ${parseInt(v||0).toLocaleString()}`},
+      {k:'duration',l:'Duration'},
+      {k:'status',l:'Status',r:v=>`<span class="badge ${v==='Available'?'badge-success':'badge-warning'}">${h(v)}</span>`},
+    ]
+  },
+  religiousBookings:{
+    cols:[
+      {k:'client',l:'Client'},
+      {k:'serviceType',l:'Type',r:v=>`<span class="badge badge-teal">${h(v)}</span>`},
+      {k:'package',l:'Package'},
+      {k:'year',l:'Year'},
+      {k:'phone',l:'Phone'},
+      {k:'status',l:'Status',r:v=>`<span class="badge ${v==='Confirmed'?'badge-success':v==='Registered'?'badge-info':'badge-warning'}">${h(v)}</span>`},
+    ]
+  }
+};
+
+function renderTable(type) {
+  const cfg = TBL[type];
+  const wrap = document.getElementById('tbl-'+type);
+  const cnt = document.getElementById('cnt-'+type);
+  if(!wrap || !cfg) return;
+
+  let rows = [...(DB[type]||[])];
+  const q = (STATE.searchFilters[type]||'').toLowerCase();
+  if(q) rows = rows.filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(q)));
+
+  if(cnt) cnt.textContent = `${rows.length} record${rows.length!==1?'s':''}`;
+
+  if(!rows.length) {
+    wrap.innerHTML = `<div class="tbl-empty"><div class="te-icon">📭</div><p>${q?'No matching records':'No records yet. Click + to add.'}</p></div>`;
+    return;
+  }
+
+  const hdr = cfg.cols.map(c=>`<th>${c.l}</th>`).join('') + '<th>Actions</th>';
+  const body = rows.map((row,i) => {
+    const cells = cfg.cols.map(c => `<td>${c.r ? c.r(row[c.k]||'') : h(row[c.k]||'—')}</td>`).join('');
+    const origIdx = DB[type].findIndex(r => r.id === row.id);
+    return `<tr>
+      <td class="row-num">${i+1}</td>
+      ${cells}
+      <td>
+        <div style="display:flex;gap:5px;">
+          <button class="btn btn-warning btn-xs" onclick="editRecord('${type}',${origIdx})">✏️</button>
+          <button class="btn btn-danger btn-xs" onclick="deleteRecord('${type}',${origIdx})">🗑️</button>
+          ${type==='clients'?`<button class="btn btn-ghost btn-xs" onclick="quickWhatsApp('${row.id}')">💬</button>`:''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  wrap.innerHTML = `<table class="dt"><thead><tr><th>#</th>${hdr}</tr></thead><tbody>${body}</tbody></table>`;
+}
+
+function filterTable(type, val) {
+  STATE.searchFilters[type] = val;
+  renderTable(type);
+}
+
+/* ================================================================
+   STATS
+   ================================================================ */
+function renderStats() {
+  const grid = document.getElementById('statsGrid');
+  if(!grid) return;
+  const activeClients = DB.clients.filter(c=>c.status==='Active').length;
+  const openCases = DB.cases.filter(c=>c.status==='Open'||c.status==='In Progress').length;
+  const pendingApps = DB.applications.filter(a=>a.status==='In Review'||a.status==='Submitted').length;
+  const todayAppts = DB.appointments.filter(a=>a.date===today()).length;
+
+  const stats = [
+    {icon:'👥',val:DB.clients.length,label:'Total Clients',delta:`${activeClients} active`,cls:'up'},
+    {icon:'⚖️',val:DB.cases.length,label:'Cases',delta:`${openCases} open`,cls:'up'},
+    {icon:'📄',val:DB.applications.length,label:'Applications',delta:`${pendingApps} pending`,cls:'neutral'},
+    {icon:'📅',val:DB.appointments.length,label:'Appointments',delta:`${todayAppts} today`,cls:'up'},
+  ];
+  grid.innerHTML = stats.map(s=>`
+    <div class="stat-card">
+      <div class="stat-icon-wrap">${s.icon}</div>
+      <div class="stat-value">${s.val}</div>
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-delta ${s.cls}">▲ ${s.delta}</div>
+    </div>`).join('');
+}
+
+function renderRecentClients() {
+  const el = document.getElementById('recentClientsList');
+  if(!el) return;
+  const recent = DB.clients.slice(0,5);
+  if(!recent.length) { el.innerHTML='<p style="font-size:13px;color:var(--text-muted);">No clients yet.</p>'; return; }
+  el.innerHTML = recent.map(c=>`
+    <div class="mini-list-item">
+      <div class="mli-avatar">${(c.name||'?')[0].toUpperCase()}</div>
+      <div class="mli-info">
+        <div class="mli-name">${h(c.name)}</div>
+        <div class="mli-sub">${h(c.phone||'')} · ${h(c.type||'')}</div>
+      </div>
+      <span class="badge ${c.status==='Active'?'badge-success':c.status==='Pending'?'badge-warning':'badge-gray'}">${h(c.status||'')}</span>
+    </div>`).join('');
+}
+
+function updateBadges() {
+  const nb = document.getElementById('nb-clients');
+  const na = document.getElementById('nb-apps');
+  if(nb) nb.textContent = DB.clients.length;
+  if(na) na.textContent = DB.applications.filter(a=>a.status==='In Review').length;
+}
+
+/* ================================================================
+   MODAL FORMS
+   ================================================================ */
+const FORMS = {
+  client:{
+    title:'Add Client', editTitle:'Edit Client',
+    size:'',
+    fields:[
+      {n:'name',l:'Full Name',t:'text',pl:'Muhammad Ali Khan',req:true},
+      {n:'phone',l:'Phone',t:'text',pl:'+92 300 0000000',def:'+92 '},
+      {n:'email',l:'Email',t:'email',pl:'client@email.com'},
+      {n:'type',l:'Client Type',t:'select',opts:['Individual','Corporate','Business','NGO']},
+      {n:'status',l:'Status',t:'select',opts:['Active','Pending','Inactive']},
+      {n:'address',l:'Address',t:'text',pl:'City, Area',full:true},
+      {n:'joined',l:'Date Joined',t:'date'},
+      {n:'notes',l:'Notes',t:'textarea',pl:'Additional notes…',full:true},
+    ]
+  },
+  application:{
+    title:'New Application', editTitle:'Edit Application',
+    size:'lg',
+    fields:[
+      {n:'appNo',l:'Application #',t:'text',pl:'APP-2025-001',req:true},
+      {n:'client',l:'Client Name',t:'text',pl:'Client name',req:true},
+      {n:'type',l:'Application Type',t:'select',opts:['Student Visa','Work Permit','Family Visa','Tourist Visa','PR Application','Business Visa']},
+      {n:'country',l:'Country',t:'text',pl:'United Kingdom'},
+      {n:'university',l:'University / Institution',t:'text',pl:'University name (if applicable)',full:true},
+      {n:'priority1st',l:'1st Priority University',t:'text',pl:'First choice'},
+      {n:'priority2nd',l:'2nd Priority University',t:'text',pl:'Second choice'},
+      {n:'priority3rd',l:'3rd Priority University',t:'text',pl:'Third choice'},
+      {n:'status',l:'Status',t:'select',opts:['Draft','Submitted','In Review','Approved','Rejected','On Hold']},
+      {n:'date',l:'Submission Date',t:'date'},
+    ]
+  },
+  case:{
+    title:'Add Case', editTitle:'Edit Case',
+    size:'lg',
+    fields:[
+      {n:'caseNo',l:'Case Number',t:'text',pl:'EC-2025-001',req:true},
+      {n:'client',l:'Client',t:'text',pl:'Client name',req:true},
+      {n:'title',l:'Case Title',t:'text',pl:'Brief description',req:true,full:true},
+      {n:'type',l:'Type',t:'select',opts:['Corporate','Immigration','Documentation','Legal','Civil','Criminal','Family']},
+      {n:'status',l:'Status',t:'select',opts:['Open','In Progress','On Hold','Closed','Dismissed']},
+      {n:'priority',l:'Priority',t:'select',opts:['High','Medium','Low']},
+      {n:'assigned',l:'Assigned To',t:'text',pl:'Asfandyar Rabbani'},
+      {n:'opened',l:'Date Opened',t:'date'},
+      {n:'notes',l:'Notes',t:'textarea',pl:'Case notes…',full:true},
+    ]
+  },
+  appointment:{
+    title:'New Appointment', editTitle:'Edit Appointment',
+    fields:[
+      {n:'client',l:'Client',t:'text',pl:'Client name',req:true},
+      {n:'service',l:'Service',t:'text',pl:'Service requested'},
+      {n:'date',l:'Date',t:'date',req:true},
+      {n:'time',l:'Time',t:'time'},
+      {n:'status',l:'Status',t:'select',opts:['Pending','Confirmed','Completed','Cancelled','Tentative']},
+      {n:'notes',l:'Notes',t:'textarea',pl:'Notes…',full:true},
+    ]
+  },
+  service:{
+    title:'Add Service', editTitle:'Edit Service',
+    fields:[
+      {n:'name',l:'Service Name',t:'text',pl:'Service name',req:true,full:true},
+      {n:'category',l:'Category',t:'select',opts:['Immigration','Corporate','Documentation','Legal','Finance','Religious','Education','Other']},
+      {n:'price',l:'Price (PKR)',t:'number',pl:'5000'},
+      {n:'duration',l:'Duration',t:'text',pl:'2 hours'},
+      {n:'status',l:'Status',t:'select',opts:['Available','Coming Soon','Discontinued']},
+      {n:'description',l:'Description',t:'textarea',pl:'Service description…',full:true},
+    ]
+  },
+  social:{
+    title:'Add Social Link', editTitle:'Edit Social Link',
+    size:'sm',
+    fields:[
+      {n:'platform',l:'Platform',t:'text',pl:'e.g., Facebook',req:true},
+      {n:'label',l:'Display Label',t:'text',pl:'e.g., Official Page',req:true},
+      {n:'url',l:'URL',t:'text',pl:'https://…',req:true,full:true},
+      {n:'icon',l:'Icon/Emoji',t:'text',pl:'🔵'},
+    ]
+  },
+  user:{
+    title:'Add User', editTitle:'Edit User',
+    size:'sm',
+    fields:[
+      {n:'name',l:'Full Name',t:'text',pl:'e.g., John Doe',req:true,full:true},
+      {n:'username',l:'Username',t:'text',pl:'USERNAME',req:true},
+      {n:'password',l:'Password',t:'password',pl:'Password',req:true},
+      {n:'role',l:'Role',t:'select',opts:['general','admin','super']},
+      {n:'initials',l:'Initials (2 chars)',t:'text',pl:'JD'},
+    ]
+  },
+  religiousApp:{
+    title:'New Religious Booking', editTitle:'Edit Booking',
+    fields:[
+      {n:'client',l:'Client Name',t:'text',pl:'Full name',req:true},
+      {n:'phone',l:'Phone',t:'text',pl:'+92 300 0000000',def:'+92 '},
+      {n:'serviceType',l:'Service Type',t:'select',opts:['Hajj','Umrah','Ziyarat','Air Ticket','Hotel Booking','Transport']},
+      {n:'package',l:'Package',t:'select',opts:['Economy','Standard','Premium','VIP']},
+      {n:'year',l:'Year',t:'text',pl:'2025'},
+      {n:'status',l:'Status',t:'select',opts:['Inquiry','Registered','Confirmed','Completed','Cancelled']},
+      {n:'notes',l:'Notes',t:'textarea',pl:'Notes…',full:true},
+    ]
+  },
+  educationApp:{
+    title:'New Education Application', editTitle:'Edit Application',
+    size:'lg',
+    fields:[
+      {n:'client',l:'Client Name',t:'text',pl:'Full name',req:true},
+      {n:'country',l:'Target Country',t:'text',pl:'e.g., UK'},
+      {n:'priority1',l:'1st Priority University',t:'text',pl:'First choice'},
+      {n:'priority2',l:'2nd Priority University',t:'text',pl:'Second choice'},
+      {n:'priority3',l:'3rd Priority University',t:'text',pl:'Third choice'},
+      {n:'program',l:'Program / Degree',t:'text',pl:'e.g., MSc Computer Science'},
+      {n:'status',l:'Status',t:'select',opts:['Draft','Submitted','In Review','Offer Received','Rejected','Enrolled']},
+      {n:'notes',l:'Notes',t:'textarea',pl:'Notes…',full:true},
+    ]
+  },
+};
+
+/* FORMS key (singular) → DB array key (plural) */
+const FORM_TO_DB = {
+  client:'clients', application:'applications', case:'cases',
+  appointment:'appointments', service:'services',
+  religiousApp:'religiousBookings', educationApp:'educationApps',
+  social:'socialLinks', user:'users'
+};
+/* DB array key (plural) → FORMS key (singular) — auto-reversed */
+const DB_TO_FORM = {};
+Object.keys(FORM_TO_DB).forEach(k => DB_TO_FORM[FORM_TO_DB[k]] = k);
+
+let _curModalType = null;
+let _curEditIdx   = null;
+let _curDbKey     = null;
+let _curModalSave = null;
+
+function openModal(type) {
+  const cfg = FORMS[type];
+  if(!cfg) return;
+  _curModalType = type;
+  _curEditIdx   = null;
+  _curDbKey     = null; // will use FORM_TO_DB in saveModal
+  document.getElementById('modalTitle').textContent = cfg.title;
+  document.getElementById('modalBody').innerHTML = buildFormHTML(cfg.fields, null);
+  const box = document.getElementById('modalBox');
+  box.className = 'modal-box' + (cfg.size ? ' ' + cfg.size : '');
+  document.getElementById('modalSaveBtn').onclick = saveModal;
+  document.getElementById('genericModal').classList.remove('hidden');
+  document.querySelectorAll('#modalBody input[type="date"]').forEach(el => { if(!el.value) el.value = today(); });
+}
+
+function editRecord(type, idx) {
+  // Table uses plural DB keys; FORMS uses singular keys — resolve both
+  const formType = DB_TO_FORM[type] || type;
+  const cfg = FORMS[formType];
+  if(!cfg) { toast('No form found for: ' + type, 'error'); return; }
+  _curModalType = formType;  // FORMS key
+  _curDbKey     = type;      // actual DB array key (plural)
+  _curEditIdx   = idx;
+  const rec = (DB[type] || [])[idx] || {};
+  document.getElementById('modalTitle').textContent = cfg.editTitle || cfg.title;
+  document.getElementById('modalBody').innerHTML = buildFormHTML(cfg.fields, rec);
+  const box = document.getElementById('modalBox');
+  box.className = 'modal-box' + (cfg.size ? ' ' + cfg.size : '');
+  document.getElementById('modalSaveBtn').onclick = saveModal;
+  document.getElementById('genericModal').classList.remove('hidden');
+}
+
+function buildFormHTML(fields, data) {
+  return `<div class="form-row">${fields.map(f => {
+    const v = data ? (data[f.n] || '') : (f.def || '');
+    const cls = 'form-field' + (f.full ? ' full' : '');
+    let inp = '';
+    if(f.t === 'select') {
+      inp = `<select class="field-input" id="ff_${f.n}">${f.opts.map(o=>`<option value="${o}" ${v===o?'selected':''}>${o}</option>`).join('')}</select>`;
+    } else if(f.t === 'textarea') {
+      inp = `<textarea class="field-input" id="ff_${f.n}" placeholder="${f.pl||''}">${h(v)}</textarea>`;
+    } else {
+      inp = `<input type="${f.t}" class="field-input" id="ff_${f.n}" value="${h(v)}" placeholder="${f.pl||''}">`;
+    }
+    return `<div class="${cls}"><label class="field-label">${f.l}${f.req?' *':''}</label>${inp}</div>`;
+  }).join('')}</div>`;
+}
+
+function saveModal() {
+  const type = _curModalType;
+  const cfg = FORMS[type];
+  if(!cfg) { toast('Form error: unknown type','error'); return; }
+
+  const rec = {};
+  let ok = true;
+  cfg.fields.forEach(f => {
+    const el = document.getElementById('ff_'+f.n);
+    if(!el) return;
+    const v = el.value.trim();
+    if(f.req && !v) { el.classList.add('error'); ok = false; } else el.classList.remove('error');
+    rec[f.n] = v;
+  });
+  if(!ok) { toast('Please fill all required (*) fields','warning'); return; }
+
+  // Resolve correct plural DB array key via map (singular FORMS key → plural DB key)
+  let dbKey = _curDbKey || FORM_TO_DB[type] || type;
+
+  if(!Array.isArray(DB[dbKey])) DB[dbKey] = [];
+
+  if(_curEditIdx !== null && _curEditIdx >= 0) {
+    // preserve original id
+    const origId = (DB[dbKey][_curEditIdx] || {}).id || uid();
+    rec.id = origId;
+    DB[dbKey][_curEditIdx] = rec;
+    toast('Record updated ✅');
+  } else {
+    rec.id = uid();
+    DB[dbKey].unshift(rec);
+    toast('Record added ✅');
+  }
+
+  saveToStorage();
+  closeModal();
+
+  // Refresh the correct table — dbKey is now always the plural DB array key
+  if(dbKey === 'users') {
+    renderUsersTable();
+  } else if(dbKey === 'educationApps') {
+    renderEduApps();
+  } else {
+    renderTable(dbKey);
+  }
+  renderStats();
+  updateBadges();
+}
+
+function deleteRecord(type, idx) {
+  // Resolve correct DB key (handles both plural and singular aliases)
+  const dbType = FORM_TO_DB[type] || type;
+  const arr = DB[dbType] || DB[type] || [];
+  const rec = arr[idx] || {};
+  const name = rec.name || rec.title || rec.caseNo || rec.client || 'record';
+  showConfirm(`Delete <strong>"${h(name)}"</strong>? This cannot be undone.`, () => {
+    const target = DB[dbType] ? dbType : type;
+    DB[target].splice(idx, 1);
+    saveToStorage();
+    if(target === 'users') renderUsersTable();
+    else renderTable(target);
+    renderStats();
+    updateBadges();
+    toast('Deleted 🗑️','warning');
+  });
+}
+
+function closeModal() {
+  document.getElementById('genericModal').classList.add('hidden');
+  _curModalType = null; _curEditIdx = null;
+}
+
+/* ================================================================
+   CHANGE PASSWORD
+   ================================================================ */
+function openChangePassword() {
+  document.getElementById('modalTitle').textContent = '🔑 Change Password';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="form-row col-1" style="gap:14px;">
+      <div class="form-field full">
+        <label class="field-label">Current Password</label>
+        <input type="password" class="field-input" id="cpCurrent" placeholder="Current password">
+      </div>
+      <div class="form-field full">
+        <label class="field-label">New Password</label>
+        <input type="password" class="field-input" id="cpNew" placeholder="New password">
+      </div>
+      <div class="form-field full">
+        <label class="field-label">Confirm New Password</label>
+        <input type="password" class="field-input" id="cpConfirm" placeholder="Confirm new password">
+      </div>
+    </div>`;
+  document.getElementById('modalBox').className = 'modal-box sm';
+  document.getElementById('modalSaveBtn').onclick = doChangePassword;
+  document.getElementById('genericModal').classList.remove('hidden');
+  _curModalType = '_changePw';
+}
+
+function doChangePassword() {
+  const cur = document.getElementById('cpCurrent').value;
+  const nw = document.getElementById('cpNew').value;
+  const cf = document.getElementById('cpConfirm').value;
+  const user = STATE.session;
+  const idx = DB.users.findIndex(u => u.id === user.id);
+  if(DB.users[idx].password !== cur) { toast('Current password incorrect','error'); return; }
+  if(nw.length < 6) { toast('Password must be at least 6 characters','warning'); return; }
+  if(nw !== cf) { toast('Passwords do not match','warning'); return; }
+  DB.users[idx].password = nw;
+  saveToStorage();
+  closeModal();
+  toast('Password changed successfully ✅');
+}
+
+/* ================================================================
+   SUPER ADMIN — RESET USER PASSWORD
+   ================================================================ */
+function openResetPassword(userId) {
+  if(STATE.session?.role !== 'super') { toast('Access denied','error'); return; }
+  document.getElementById('modalTitle').textContent = '🔑 Reset User Password';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="form-row col-1" style="gap:14px;">
+      <div class="form-field full">
+        <label class="field-label">New Password</label>
+        <input type="password" class="field-input" id="rpNew" placeholder="New password">
+      </div>
+    </div>`;
+  document.getElementById('modalBox').className = 'modal-box sm';
+  document.getElementById('modalSaveBtn').onclick = () => {
+    const np = document.getElementById('rpNew').value;
+    if(np.length < 6) { toast('Min 6 characters','warning'); return; }
+    const idx = DB.users.findIndex(u=>u.id===userId);
+    if(idx>=0) { DB.users[idx].password = np; saveToStorage(); toast('Password reset ✅'); closeModal(); renderUsersTable(); }
+  };
+  document.getElementById('genericModal').classList.remove('hidden');
+}
+
+/* ================================================================
+   USERS TABLE
+   ================================================================ */
+function renderUsersTable() {
+  const wrap = document.getElementById('tbl-users');
+  if(!wrap) return;
+  const rows = DB.users;
+  const isSuperAdmin = STATE.session?.role === 'super';
+  if(!rows.length) { wrap.innerHTML='<div class="tbl-empty"><div class="te-icon">👤</div><p>No users.</p></div>'; return; }
+  const body = rows.map((u,i)=>`
+    <tr>
+      <td class="row-num">${i+1}</td>
+      <td><strong>${h(u.name)}</strong></td>
+      <td><code>${h(u.username)}</code></td>
+      <td><span class="role-chip ${u.role==='super'?'role-super':u.role==='admin'?'role-admin':'role-general'}">${u.role}</span></td>
+      <td>
+        <div style="display:flex;gap:5px;">
+          ${isSuperAdmin?`<button class="btn btn-warning btn-xs" onclick="editRecord('user',${i})">✏️</button>
+          <button class="btn btn-danger btn-xs" onclick="deleteRecord('user',${i})">🗑️</button>
+          <button class="btn btn-ghost btn-xs" onclick="openResetPassword('${u.id}')">🔑 Reset</button>`:'<span style="font-size:12px;color:var(--text-muted);">View only</span>'}
+        </div>
+      </td>
+    </tr>`).join('');
+  wrap.innerHTML=`<table class="dt"><thead><tr><th>#</th><th>Name</th><th>Username</th><th>Role</th><th>Actions</th></tr></thead><tbody>${body}</tbody></table>`;
+}
+
+/* ================================================================
+   SOCIAL LINKS
+   ================================================================ */
+function renderSocialLinks() {
+  const el = document.getElementById('socialLinksList');
+  if(!el) return;
+  if(!DB.socialLinks.length) { el.innerHTML='<p style="color:var(--text-muted);font-size:13px;">No links yet.</p>'; return; }
+  el.innerHTML = DB.socialLinks.map((s,i)=>`
+    <div class="social-link-item">
+      <div class="sli-platform">${s.icon||'🔗'}</div>
+      <div class="sli-info">
+        <div class="sli-label">${h(s.platform)} — ${h(s.label)}</div>
+        <div class="sli-url">${h(s.url)}</div>
+      </div>
+      <div class="sli-actions">
+        <button class="btn btn-ghost btn-xs" onclick="window.open('${h(s.url)}','_blank')">↗</button>
+        <button class="btn btn-warning btn-xs" onclick="editRecord('social',${i})">✏️</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteRecord('social',${i})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderSocialPreview() {
+  const el = document.getElementById('socialPreview');
+  if(!el) return;
+  if(!DB.socialLinks.length) { el.innerHTML='<p style="color:var(--text-muted);font-size:13px;">Add links above to see preview.</p>'; return; }
+  el.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:10px;">${DB.socialLinks.map(s=>`
+    <a href="${h(s.url)}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:9px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-full);font-size:13px;font-weight:600;color:var(--text-primary);transition:var(--transition);">
+      ${s.icon||'🔗'} ${h(s.label)}
+    </a>`).join('')}</div>`;
+}
+
+/* ================================================================
+   WHATSAPP
+   ================================================================ */
+function loadWaNumber() {
+  const el = document.getElementById('waNumberDisplay');
+  if(el) el.textContent = DB.waNumber || 'Not configured — go to Settings';
+}
+function loadWaConfigInput() {
+  const el = document.getElementById('waConfigInput');
+  if(el) el.value = DB.waNumber || '';
+}
+function saveWaNumber() {
+  const v = document.getElementById('waConfigInput')?.value.trim();
+  if(!v) { toast('Please enter a phone number','warning'); return; }
+  DB.waNumber = v;
+  saveToStorage();
+  loadWaNumber();
+  toast('WhatsApp number saved ✅');
+}
+
+function populateWaClientSelect() {
+  const sel = document.getElementById('waMsgClient');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— Choose Client —</option>' +
+    DB.clients.map(c=>`<option value="${c.id}">${h(c.name)} — ${h(c.phone||'')}</option>`).join('');
+}
+
+function prefillWaNumber() {
+  const sel = document.getElementById('waMsgClient');
+  if(!sel) return;
+  const cid = sel.value;
+  const client = DB.clients.find(c=>c.id===cid);
+  if(client && client.phone) {
+    document.getElementById('waMsgNumber').value = client.phone;
+  } else {
+    document.getElementById('waMsgNumber').value = '+92 ';
+  }
+}
+
+const WA_TEMPLATES = {
+  appt: `Assalamu Alaikum! This is a reminder for your appointment with *Ednex Consultant*. Please confirm your attendance. JazakAllah Khair.`,
+  docs: `Assalamu Alaikum! Kindly bring the following documents to our office: [List documents]. Contact us for any queries. Ednex Consultant, Peshawar.`,
+  ready: `Assalamu Alaikum! Great news! Your visa/documents are ready. Please visit our office at your earliest convenience. Ednex Consultant, Peshawar.`,
+  followup: `Assalamu Alaikum! We wanted to follow up on your case with Ednex Consultant. Please call or visit us for an update. Thank you!`,
+  custom: ''
+};
+
+function applyTemplate() {
+  const t = document.getElementById('waMsgTemplate')?.value;
+  const ta = document.getElementById('waMsgText');
+  if(ta && t && WA_TEMPLATES[t] !== undefined) ta.value = WA_TEMPLATES[t];
+}
+
+function sendWhatsApp() {
+  const num = (document.getElementById('waMsgNumber')?.value||'').replace(/\s+/g,'').replace(/[^+\d]/g,'');
+  const msg = document.getElementById('waMsgText')?.value.trim();
+  if(!num) { toast('Please enter a recipient number','warning'); return; }
+  if(!msg) { toast('Please enter a message','warning'); return; }
+
+  const encoded = encodeURIComponent(msg);
+  const url = `https://wa.me/${num.replace('+','')}?text=${encoded}`;
+  window.open(url,'_blank');
+
+  // Log
+  const clientSel = document.getElementById('waMsgClient');
+  const clientName = clientSel?.options[clientSel.selectedIndex]?.text || num;
+  DB.msgLog.unshift({
+    id:uid(), to:clientName, number:num, msg, time:new Date().toLocaleString(), status:'Sent'
+  });
+  if(DB.msgLog.length > 50) DB.msgLog.pop();
+  saveToStorage();
+  renderMsgLog();
+  toast('WhatsApp message opened 💬');
+}
+
+function quickWhatsApp(clientId) {
+  const c = DB.clients.find(x=>x.id===clientId);
+  if(!c) return;
+  gotoPage('messages', null);
+  setTimeout(()=>{
+    const sel = document.getElementById('waMsgClient');
+    if(sel) { sel.value = clientId; prefillWaNumber(); }
+  }, 300);
+}
+
+function renderMsgLog() {
+  const el = document.getElementById('msgLog');
+  if(!el) return;
+  if(!DB.msgLog.length) { el.innerHTML='<p style="font-size:13px;color:var(--text-muted);">No messages sent yet.</p>'; return; }
+  el.innerHTML = DB.msgLog.map(m=>`
+    <div class="mini-list-item">
+      <div style="font-size:20px;">💬</div>
+      <div class="mli-info">
+        <div class="mli-name">${h(m.to)}</div>
+        <div class="mli-sub">${h(m.number)} · ${h(m.time)}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${h(m.msg.substring(0,60))}${m.msg.length>60?'…':''}</div>
+      </div>
+      <span class="badge badge-success">Sent</span>
+    </div>`).join('');
+}
+
+/* ================================================================
+   FOREIGN EDUCATION MODULE
+   ================================================================ */
+function renderCountryChips() {
+  const el = document.getElementById('countryChips');
+  if(!el) return;
+  if(!DB.countries.length) { el.innerHTML='<p style="font-size:13px;color:var(--text-muted);">No countries added yet.</p>'; return; }
+  el.innerHTML = DB.countries.map(c=>`
+    <span class="country-chip">
+      ${c.emoji||'🌐'} ${h(c.name)}
+      <span class="cc-remove" onclick="removeCountry('${c.id}')">✕</span>
+    </span>`).join('');
+}
+
+function populateCountrySelect() {
+  const sel = document.getElementById('uniCountrySelect');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— Choose Country —</option>' +
+    DB.countries.map(c=>`<option value="${c.id}">${c.emoji||'🌐'} ${h(c.name)}</option>`).join('');
+}
+
+function renderUniversities() {
+  const sel = document.getElementById('uniCountrySelect');
+  const el = document.getElementById('uniList');
+  if(!el || !sel) return;
+  const c = DB.countries.find(x=>x.id===sel.value);
+  if(!c) { el.innerHTML=''; return; }
+  if(!c.universities?.length) { el.innerHTML='<p style="font-size:13px;color:var(--text-muted);">No universities added for this country.</p>'; return; }
+  el.innerHTML = c.universities.map(u=>`
+    <div class="uni-item">
+      <div class="uni-rank">${u.rank||'?'}</div>
+      <div style="flex:1;font-size:13px;font-weight:600;">${h(u.name)}</div>
+    </div>`).join('');
+}
+
+function openAddCountryModal() {
+  document.getElementById('modalTitle').textContent = '🌍 Add Country';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="form-row col-1" style="gap:14px;">
+      <div class="form-field full"><label class="field-label">Country Name *</label><input type="text" class="field-input" id="cName" placeholder="e.g., United Kingdom"></div>
+      <div class="form-field full"><label class="field-label">Flag Emoji</label><input type="text" class="field-input" id="cEmoji" placeholder="🇬🇧"></div>
+      <div class="form-field full">
+        <label class="field-label">Universities (one per line)</label>
+        <textarea class="field-input" id="cUnis" rows="5" placeholder="University of Oxford&#10;University of Cambridge"></textarea>
+      </div>
+    </div>`;
+  document.getElementById('modalBox').className = 'modal-box sm';
+  document.getElementById('modalSaveBtn').onclick = saveCountry;
+  document.getElementById('genericModal').classList.remove('hidden');
+  _curModalType = '_country';
+}
+
+function saveCountry() {
+  const n = document.getElementById('cName')?.value.trim();
+  if(!n) { toast('Country name required','warning'); return; }
+  const emoji = document.getElementById('cEmoji')?.value.trim() || '🌐';
+  const unisRaw = (document.getElementById('cUnis')?.value || '').split('\n').map(x=>x.trim()).filter(Boolean);
+  const universities = unisRaw.map((u,i)=>({name:u, rank:i+1}));
+  DB.countries.push({id:uid(), name:n, emoji, universities});
+  saveToStorage();
+  closeModal();
+  renderCountryChips();
+  populateCountrySelect();
+  toast('Country added ✅');
+}
+
+function removeCountry(id) {
+  DB.countries = DB.countries.filter(c=>c.id!==id);
+  saveToStorage();
+  renderCountryChips();
+  populateCountrySelect();
+  toast('Country removed');
+}
+
+function renderEduApps() {
+  const el = document.getElementById('tbl-educationApps');
+  if(!el) return;
+  if(!DB.educationApps.length) { el.innerHTML='<div class="tbl-empty"><div class="te-icon">🎓</div><p>No education applications yet.</p></div>'; return; }
+  const body = DB.educationApps.map((a,i)=>`
+    <tr>
+      <td class="row-num">${i+1}</td>
+      <td><strong>${h(a.client)}</strong></td>
+      <td>${h(a.country)}</td>
+      <td>${h(a.priority1||'—')}</td>
+      <td>${h(a.priority2||'—')}</td>
+      <td>${h(a.priority3||'—')}</td>
+      <td><span class="badge badge-info">${h(a.status||'Draft')}</span></td>
+      <td><div style="display:flex;gap:5px;">
+        <button class="btn btn-warning btn-xs" onclick="editEduApp(${i})">✏️</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteEduApp(${i})">🗑️</button>
+      </div></td>
+    </tr>`).join('');
+  el.innerHTML=`<table class="dt" style="width:100%;"><thead><tr><th>#</th><th>Client</th><th>Country</th><th>1st Priority</th><th>2nd Priority</th><th>3rd Priority</th><th>Status</th><th>Actions</th></tr></thead><tbody>${body}</tbody></table>`;
+}
+
+function editEduApp(idx) { _curEditIdx = idx; _curModalType = 'educationApp'; editRecord('educationApp',idx); }
+function deleteEduApp(idx) {
+  showConfirm('Delete this education application?', ()=>{
+    DB.educationApps.splice(idx,1);
+    saveToStorage();
+    renderEduApps();
+    toast('Deleted','warning');
+  });
+}
+
+// Override save for educationApp
+const origSave = saveModal;
+// handled generically — educationApps is a standard DB array handled by generic form
+
+/* ================================================================
+   RELIGIOUS SERVICES
+   ================================================================ */
+const REL_CATS = [
+  {
+    key:'hajj', icon:'🕋', title:'Hajj Services',
+    services:[
+      {name:'Hajj Registration Assistance',desc:'Complete Hajj form submission and Ministry liaison'},
+      {name:'Hajj Package Booking',desc:'Economy, Standard, and VIP Hajj packages'},
+      {name:'Mahram Documentation',desc:'Assistance for female applicants requiring Mahram'},
+    ]
+  },
+  {
+    key:'umrah', icon:'🕌', title:'Umrah Services',
+    services:[
+      {name:'Umrah Visa Processing',desc:'Fast-track Umrah visa application'},
+      {name:'Umrah Package Booking',desc:'Group and individual Umrah packages'},
+      {name:'Hotel & Transport Booking',desc:'Makkah and Madinah hotel reservations'},
+    ]
+  },
+  {
+    key:'tickets', icon:'✈️', title:'Air Ticket Services',
+    services:[
+      {name:'Domestic Air Tickets',desc:'PIA, Airblue, Serene Air bookings'},
+      {name:'International Air Tickets',desc:'All major international airlines'},
+      {name:'Ticket Reissuance & Refunds',desc:'Manage changes and cancellations'},
+    ]
+  },
+  {
+    key:'ziyarat', icon:'🌹', title:'Ziyarat & Travel',
+    services:[
+      {name:'Ziyarat Tours',desc:'Organized religious site visits'},
+      {name:'Iran & Iraq Ziyarat',desc:'Special Shia pilgrimage packages'},
+      {name:'Travel Documentation',desc:'Visa and travel document assistance'},
+    ]
+  },
+];
+
+function renderReligiousCategories() {
+  const el = document.getElementById('relCategories');
+  if(!el) return;
+  el.innerHTML = REL_CATS.map(cat=>`
+    <div class="rel-category">
+      <div class="rel-cat-header" onclick="toggleRelCat('${cat.key}')">
+        <span class="rel-cat-icon">${cat.icon}</span>
+        <span class="rel-cat-title">${cat.title}</span>
+        <span class="rel-cat-count">${cat.services.length} services</span>
+        <span id="rc-caret-${cat.key}">▼</span>
+      </div>
+      <div class="rel-cat-body" id="rc-body-${cat.key}">
+        ${cat.services.map(s=>`
+          <div class="rel-service-item">
+            <span class="rsi-icon">${cat.icon}</span>
+            <div class="rsi-info">
+              <div class="rsi-name">${h(s.name)}</div>
+              <div class="rsi-desc">${h(s.desc)}</div>
+            </div>
+            <button class="btn btn-primary btn-xs" onclick="gotoPage('messages',null)">💬 Inquire</button>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function toggleRelCat(key) {
+  const body = document.getElementById('rc-body-'+key);
+  const caret = document.getElementById('rc-caret-'+key);
+  if(!body) return;
+  const hidden = body.style.display === 'none';
+  body.style.display = hidden ? '' : 'none';
+  if(caret) caret.textContent = hidden ? '▼' : '▶';
+}
+
+/* ================================================================
+   DATA SUMMARY
+   ================================================================ */
+function renderDataSummary() {
+  const el = document.getElementById('dataSummary');
+  if(!el) return;
+  const rows = [
+    ['Clients', DB.clients.length],
+    ['Applications', DB.applications.length],
+    ['Cases', DB.cases.length],
+    ['Appointments', DB.appointments.length],
+    ['Services', DB.services.length],
+    ['Religious Bookings', DB.religiousBookings.length],
+    ['Education Apps', DB.educationApps.length],
+    ['Social Links', DB.socialLinks.length],
+    ['Countries', DB.countries.length],
+  ];
+  const total = rows.reduce((a,r)=>a+r[1],0);
+  el.innerHTML = rows.map(r=>`
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <span style="color:var(--text-muted);">${r[0]}</span>
+      <strong>${r[1]} records</strong>
+    </div>`).join('') +
+    `<div style="display:flex;justify-content:space-between;padding:10px 0;font-size:15px;font-weight:800;color:var(--brand-red);">
+      <span>Total Records</span><span>${total}</span>
+    </div>`;
+}
+
+/* ================================================================
+   CSV EXPORT / IMPORT
+   ================================================================ */
+function exportCSV(type) {
+  const data = DB[type];
+  if(!data?.length) { toast('No data to export','warning'); return; }
+  const keys = Object.keys(data[0]).filter(k=>k!=='id');
+  const csv = [keys.join(','), ...data.map(r=>keys.map(k=>`"${(r[k]||'').toString().replace(/"/g,'""')}"`).join(','))].join('\n');
+  dlFile(csv, `ednex_${type}_${todayFmt()}.csv`, 'text/csv');
+  toast(`${type} exported 📥`);
+}
+
+function exportAllCSV() {
+  let csv = '';
+  ['clients','applications','cases','appointments','services','religiousBookings','educationApps'].forEach(t => {
+    if(!DB[t]?.length) return;
+    csv += `\n### SECTION: ${t.toUpperCase()} ###\n`;
+    const keys = Object.keys(DB[t][0]).filter(k=>k!=='id');
+    csv += keys.join(',') + '\n';
+    DB[t].forEach(r => { csv += keys.map(k=>`"${(r[k]||'').toString().replace(/"/g,'""')}"`).join(',') + '\n'; });
+  });
+  if(!csv.trim()) { toast('No data to export','warning'); return; }
+  dlFile(csv, `ednex_full_backup_${todayFmt()}.csv`, 'text/csv');
+  toast('Full backup downloaded 💾');
+}
+
+function importCSV(event, targetType) {
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const text = e.target.result;
+      if(targetType === 'all') {
+        parseMultiCSV(text);
+      } else {
+        const parsed = parseSingleCSV(text);
+        if(parsed.length) {
+          DB[targetType] = parsed;
+          saveToStorage();
+          renderTable(targetType);
+          renderStats();
+          updateBadges();
+          toast(`${parsed.length} records imported ✅`);
+          const rs = document.getElementById('recStatus');
+          if(rs) rs.innerHTML=`<div style="background:rgba(30,132,73,.08);border:1px solid rgba(30,132,73,.2);border-radius:var(--radius-md);padding:12px 16px;font-size:13px;color:var(--brand-green);">✅ Imported ${parsed.length} records.</div>`;
+        } else toast('No data found in CSV','warning');
+      }
+    } catch(err) { toast('Error parsing CSV: '+err.message,'error'); }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function parseSingleCSV(text) {
+  const lines = text.trim().split('\n').filter(l=>l.trim());
+  if(lines.length < 2) return [];
+  const headers = parseCSVLine(lines[0]);
+  return lines.slice(1).map(line => {
+    const vals = parseCSVLine(line);
+    const obj = {id:uid()};
+    headers.forEach((hdr,i) => { obj[hdr.trim()] = (vals[i]||'').trim(); });
+    return obj;
+  });
+}
+
+function parseMultiCSV(text) {
+  let cur = null, headers = [], imported = 0;
+  const sections = {};
+  text.split('\n').forEach(line => {
+    line = line.trim();
+    if(!line) return;
+    const sm = line.match(/^###\s*SECTION:\s*(\w+)\s*###/);
+    if(sm) { cur = sm[1].toLowerCase(); headers = []; sections[cur] = []; return; }
+    if(!cur) return;
+    if(!headers.length) { headers = parseCSVLine(line); return; }
+    const vals = parseCSVLine(line);
+    if(!vals.length) return;
+    const obj = {id:uid()};
+    headers.forEach((hdr,i) => { obj[hdr.trim()] = (vals[i]||'').trim(); });
+    sections[cur].push(obj);
+    imported++;
+  });
+  if(imported) {
+    Object.keys(sections).forEach(k => { if(DB[k] !== undefined && sections[k].length) DB[k] = sections[k]; });
+    saveToStorage();
+    renderAllData();
+    updateBadges();
+    toast(`Backup restored — ${imported} records ✅`);
+    const rs = document.getElementById('recStatus');
+    if(rs) rs.innerHTML=`<div style="background:rgba(30,132,73,.08);border:1px solid rgba(30,132,73,.2);border-radius:var(--radius-md);padding:12px 16px;font-size:13px;color:var(--brand-green);">✅ Restored ${imported} total records from backup.</div>`;
+  } else toast('No valid data found in CSV','warning');
+}
+
+function parseCSVLine(line) {
+  const res=[]; let cur='', inQ=false;
+  for(let i=0;i<line.length;i++){
+    if(line[i]==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+    else if(line[i]===','&&!inQ){res.push(cur);cur='';}
+    else cur+=line[i];
+  }
+  res.push(cur);
+  return res;
+}
+
+/* ================================================================
+   DRAG & DROP (Recovery)
+   ================================================================ */
+function dzOver(e){e.preventDefault();document.getElementById('dropZone').classList.add('drag-active');}
+function dzLeave(e){document.getElementById('dropZone').classList.remove('drag-active');}
+function dzDrop(e){
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag-active');
+  const f = e.dataTransfer.files[0];
+  if(!f?.name.endsWith('.csv')) { toast('Please drop a .csv file','error'); return; }
+  importCSV({target:{files:[f],value:''}}, 'all');
+}
+
+/* ================================================================
+   CONFIRM / CLEAR
+   ================================================================ */
+function showConfirm(msg, cb) {
+  STATE.confirmCb = cb;
+  document.getElementById('confirmBody').innerHTML = `<p style="font-size:14px;color:var(--text-secondary);line-height:1.6;">${msg}</p>`;
+  document.getElementById('confirmModal').classList.remove('hidden');
+}
+function runConfirm(){ if(STATE.confirmCb) STATE.confirmCb(); closeConfirm(); STATE.confirmCb=null; }
+function closeConfirm(){ document.getElementById('confirmModal').classList.add('hidden'); }
+
+function confirmClearAll() {
+  showConfirm('⚠️ <strong>This will delete ALL records permanently.</strong> Are you absolutely sure?', () => {
+    ['clients','applications','cases','appointments','services','religiousBookings','educationApps','msgLog'].forEach(k => DB[k]=[]);
+    saveToStorage();
+    renderAllData();
+    updateBadges();
+    toast('All data cleared 🗑️','warning');
+  });
+}
+
+/* ================================================================
+   DEVELOPER CARD
+   ================================================================ */
+function showDevCard(){ document.getElementById('devPopup').classList.remove('hidden'); }
+function closeDevCard(){ document.getElementById('devPopup').classList.add('hidden'); }
+
+/* ================================================================
+   USER DROPDOWN
+   ================================================================ */
+function toggleUserDropdown() {
+  document.getElementById('userDropdown').classList.toggle('hidden');
+}
+document.addEventListener('click', e => {
+  const tu = document.querySelector('.topbar-user');
+  if(tu && !tu.contains(e.target)) {
+    document.getElementById('userDropdown')?.classList.add('hidden');
+  }
+});
+
+/* ================================================================
+   TOAST NOTIFICATIONS
+   ================================================================ */
+function toast(msg, type='success') {
+  const icons = {success:'✅',error:'❌',warning:'⚠️',info:'ℹ️'};
+  const stack = document.getElementById('toastStack');
+  const el = document.createElement('div');
+  el.className = `toast-item ${type!=='success'?type:''}`;
+  el.innerHTML = `<span class="toast-icon">${icons[type]||'✅'}</span><span class="toast-msg">${msg}</span>`;
+  stack.appendChild(el);
+  setTimeout(()=>{ el.classList.add('toast-removing'); setTimeout(()=>el.remove(),260); },3600);
+}
+
+/* ================================================================
+   HELPERS
+   ================================================================ */
+function h(s){ if(typeof s!=='string') return s||''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function today(){ return new Date().toISOString().split('T')[0]; }
+function todayFmt(){ return today().replace(/-/g,''); }
+function dlFile(content, name, mime) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content],{type:mime}));
+  a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+/* ================================================================
+   KEYBOARD SHORTCUTS
+   ================================================================ */
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape') { closeModal(); closeConfirm(); closeDevCard(); }
+  if((e.ctrlKey||e.metaKey) && e.key==='k') { e.preventDefault(); }
+  // Alt+Left = Back, Alt+Right = Forward (like Chrome)
+  if(e.altKey && e.key==='ArrowLeft')  { e.preventDefault(); goBack(); }
+  if(e.altKey && e.key==='ArrowRight') { e.preventDefault(); goForward(); }
+});
+</script>
+</body>
+</html>
